@@ -14,16 +14,13 @@ public class ClienteRegular extends Cliente {
     private  String marca;
     private  Date horaEntrada;
     private  String parqueoAsignado;
-    private int Tipovehiculo;
+    private String Tipovehiculo;
 //Atributos de la clase ClienteRegular
 
-    public ClienteRegular( int Tipovehiculo,String placa, String color, String marca, Date horaEntrada, String parqueoAsignado) {
-        super(placa);
-        this.color = color;
-        this.marca = marca;
+    public ClienteRegular( String Tipovehiculo,String placa, String color, String marca, Date horaEntrada, String parqueoAsignado) {
+        super(Tipovehiculo, placa, color, marca);
         this.horaEntrada = horaEntrada;
         this.parqueoAsignado = parqueoAsignado;
-        this.Tipovehiculo = Tipovehiculo;
     }// Constructor del objeto ClienteRegular, con los parámetros placa, color, marca, hora de entrada y parqueo asignado
 
     public double calcularTarifa(Date horaSalida) {
@@ -39,13 +36,8 @@ public class ClienteRegular extends Cliente {
         return costoTotal;
     }// se hace el algoritmo que va a permitir saber cuanto se tiene que pagar del parqueo
 
-    public String getColor() {
-        return color;
-    }
 
-    public String getMarca() {
-        return marca;
-    }
+
 
     public Date getHoraEntrada() {
         return horaEntrada;
@@ -54,9 +46,7 @@ public class ClienteRegular extends Cliente {
     public String getParqueoAsignado() {
         return parqueoAsignado;
     }
-    public int gettipoVehiculo() {
-        return Tipovehiculo;
-    }
+
 
     public static void mostrarParqueosDisponibles(List<String> parqueosDisponibles) {
         System.out.println("Parqueos disponibles:");

@@ -1,4 +1,11 @@
-public class Residente {
+/** Anthony Lou, Andres Mazariegos, Juan Francisco Martinez, Daniela Ramirez 
+
+  * Cliente
+ 
+  * @param placa,tarifa 
+  * @throws Es la clase padre de las otras dos
+  */
+public class Residente extends Cliente{
     private String nombre;
     private String placa;
     private String Tipovehiculo;
@@ -6,6 +13,7 @@ public class Residente {
     private String marca;
     
     public Residente(String nombre, String Tipovehiculo, String placa, String color, String marca) {
+        super(Tipovehiculo, placa, color, marca);
         this.nombre = nombre;
         this.placa = placa;
         this.Tipovehiculo = Tipovehiculo;
@@ -16,21 +24,7 @@ public class Residente {
     public String getnombre(){
         return nombre;
     }
-
-    public String getPlaca() {
-        return placa;
-    }// se finalizan los getters del objeto ClienteRegular
-
-    public String getTipovehiculo() {
-        return Tipovehiculo;
-    }
-
-    public String getcolor() {
-        return color;
-    }
-    
-    public String getmarca() {
-        return marca;
-    }
+// se finalizan los getters del objeto ClienteRegular
 
 }
+
