@@ -14,14 +14,16 @@ public class ClienteRegular extends Cliente {
     private  String marca;
     private  Date horaEntrada;
     private  String parqueoAsignado;
+    private int Tipovehiculo;
 //Atributos de la clase ClienteRegular
 
-    public ClienteRegular(String placa, String color, String marca, Date horaEntrada, String parqueoAsignado) {
+    public ClienteRegular( int Tipovehiculo,String placa, String color, String marca, Date horaEntrada, String parqueoAsignado) {
         super(placa);
         this.color = color;
         this.marca = marca;
         this.horaEntrada = horaEntrada;
         this.parqueoAsignado = parqueoAsignado;
+        this.Tipovehiculo = Tipovehiculo;
     }// Constructor del objeto ClienteRegular, con los parámetros placa, color, marca, hora de entrada y parqueo asignado
 
     public double calcularTarifa(Date horaSalida) {
@@ -52,6 +54,9 @@ public class ClienteRegular extends Cliente {
     public String getParqueoAsignado() {
         return parqueoAsignado;
     }
+    public int gettipoVehiculo() {
+        return Tipovehiculo;
+    }
 
     public static void mostrarParqueosDisponibles(List<String> parqueosDisponibles) {
         System.out.println("Parqueos disponibles:");
@@ -59,5 +64,5 @@ public class ClienteRegular extends Cliente {
             System.out.print(parqueo + " ");
         }
         System.out.println();
-    }   // se finalizan los getters del objeto ClienteRegular
+    }   // se finalizan los getters del objeto jugador
 }

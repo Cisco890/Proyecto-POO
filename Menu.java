@@ -6,6 +6,7 @@
   * @throws  menu del programa, aca se miran todas las opciones que los usuarios vana  poder seleccionar
   */
 import java.util.Scanner;
+import java.util.Date;
 import java.util.Arrays;
 public class Menu {
 
@@ -47,8 +48,43 @@ public class Menu {
                 // Creación del objeto Residente y meterlo al array 
                 Residente[Residentecount] = new Residente(nombre, Tipovehiculo, placa, color, marca);
                 Residentecount++; 
+                break;
+
+                case 2:
+                System.out.print("Tipo de vehículo: ");
+                int Tipovehiculo = scanner.nextInt();
+                System.out.print("Placa del vehículo: ");
+                String placa = scanner.nextLine();
+                System.out.print("Color del vehículo: ");
+                String color = scanner.nextLine();
+                System.out.print("Marca del vehículo: ");
+                String marca = scanner.nextLine();
+                System.out.print("Ingrese la hora de entrada: ");
+                Date horaEntrada = new Date();;
+                System.out.print("Ingrese el parqueo asignado: ");
+                String parqueoAsignado = scanner.nextLine();
+                scanner.nextLine(); // Fin de los datos de la clase Cliente
+                // Creación del objeto Cliente y meterlo al array 
+                ClienteRegular[ClienteRegularcount] = new ClienteRegular(Tipovehiculo,placa, color, marca, horaEntrada, parqueoAsignado);
+                ClienteRegularcount++; 
+                break;
+
+                case 3:
+                // codigo para ingresar el CSV
+
+                case 4:
+                // codigo para cobrar el parqueo
+
+                case 5:
+                System.out.println("Saliendo del programa.");
+                System.exit(0); // fin del programa
+                default:
+                System.out.println("Opción no válida. Por favor, seleccione una opción válida.");
+            }
+
 
     }
+
 }
 }
 }
