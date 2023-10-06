@@ -1,11 +1,20 @@
+/** Anthony Lou, Andres Mazariegos, Juan Francisco Martinez, Daniela Ramirez 
+
+  * ClienteRegular
+ 
+  * @param placa,color,marca,horaentrada,parqueoAsignado 
+  * @throws Es la clase que se encarga de registrar todo lo relacionado a los clientes del parqueo, su hora de netrada, cuanto deben, parqueo que deben usar etcetera.
+
+  */
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-class ClienteRegular extends Cliente {
-    private String color;
-    private String marca;
-    private Date horaEntrada;
-    private String parqueoAsignado;
+public class ClienteRegular extends Cliente {
+    private  String color;
+    private  String marca;
+    private  Date horaEntrada;
+    private  String parqueoAsignado;
+//Atributos de la clase ClienteRegular
 
     public ClienteRegular(String placa, String color, String marca, Date horaEntrada, String parqueoAsignado) {
         super(placa);
@@ -13,7 +22,7 @@ class ClienteRegular extends Cliente {
         this.marca = marca;
         this.horaEntrada = horaEntrada;
         this.parqueoAsignado = parqueoAsignado;
-    }
+    }// Constructor del objeto ClienteRegular, con los parámetros placa, color, marca, hora de entrada y parqueo asignado
 
     public double calcularTarifa(Date horaSalida) {
         long tiempoEstacionadoMillis = horaSalida.getTime() - horaEntrada.getTime();
@@ -26,7 +35,7 @@ class ClienteRegular extends Cliente {
         double costoTotal = (tiempoEstacionadoHoras * tarifaPorHora) + (tiempoEstacionadoMinutos / 30 * tarifaPorMediaHora);
 
         return costoTotal;
-    }
+    }// se hace el algoritmo que va a permitir saber cuanto se tiene que pagar del parqueo
 
     public String getColor() {
         return color;
@@ -50,5 +59,5 @@ class ClienteRegular extends Cliente {
             System.out.print(parqueo + " ");
         }
         System.out.println();
-    }
+    }   // se finalizan los getters del objeto ClienteRegular
 }

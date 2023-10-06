@@ -1,4 +1,4 @@
-class Residente {
+public class Residente {
     private String placa;
 
     public Residente(String placa) {
@@ -7,5 +7,5 @@ class Residente {
 
     public String getPlaca() {
         return placa;
-    }
+    }// se finalizan los getters del objeto ClienteRegular
 }
