@@ -15,6 +15,7 @@ public class Menu {
         Scanner scanner = new Scanner(System.in);
         ClienteRegular[] ClienteRegular = new ClienteRegular[10]; // Array de ClienteRegular, cantidad máxima de 10
         Residente[] Residente = new Residente[10]; // Array de Residente, cantidad máxima de 10
+        int Tipovehiculo;
 
         int ClienteRegularcount = 0; // llevar control de Clientes Regular
         int Residentecount = 0; // llevar control de cantidad de Residentes
@@ -34,10 +35,33 @@ public class Menu {
             switch (opcion) {// inicio del switch
 
                 case 1:
+                boolean terminado = false;
                 System.out.print("Nombre del Residente: ");
                 String nombre = scanner.nextLine();
+                
+                if (!terminado){
+                System.out.print("Que tipo de vehiculo es? ");
+                System.out.print("1. Moto");
+                System.out.print("2. Carro Chico");
+                System.out.print("3. Camioneta");
+                int ans = scanner.nextInt();
+
+                if(ans == 1){
+                    Tipovehiculo = 3;
+                    terminado = true;
+                }
+                if(ans == 2){
+                    Tipovehiculo = 2;
+                    terminado = true;
+                }
+                if(ans == 3){
+                    Tipovehiculo = 3;
+                    terminado = true;
+                }
+                }
+
                 System.out.print("Tipo de vehículo: ");
-                int Tipovehiculo = scanner.nextInt();
+                Tipovehiculo = scanner.nextInt();
                 System.out.print("Placa del vehículo: ");
                 String placa = scanner.nextLine();
                 System.out.print("Color del vehículo: ");
@@ -48,24 +72,44 @@ public class Menu {
                 // Creación del objeto Residente y meterlo al array 
                 Residente[Residentecount] = new Residente(nombre, Tipovehiculo, placa, color, marca);
                 Residentecount++; 
+
                 break;
 
                 case 2:
-                System.out.print("Tipo de vehículo: ");
-                int Tipovehiculo = scanner.nextInt();
+                boolean terminado1 = false;
+                if (!terminado1){
+                System.out.print("Que tipo de vehiculo es? ");
+                System.out.print("1. Moto");
+                System.out.print("2. Carro Chico");
+                System.out.print("3. Camioneta");
+                int ans = scanner.nextInt();
+
+                if(ans == 1){
+                    Tipovehiculo = 1;
+                    terminado1 = true;
+                }
+                if(ans == 2){
+                    Tipovehiculo = 2;
+                    terminado1 = true;
+                }
+                if(ans == 3){
+                    Tipovehiculo = 3;
+                    terminado1 = true;
+                }
+                }
                 System.out.print("Placa del vehículo: ");
-                String placa = scanner.nextLine();
+                placa = scanner.nextLine();
                 System.out.print("Color del vehículo: ");
-                String color = scanner.nextLine();
+                color = scanner.nextLine();
                 System.out.print("Marca del vehículo: ");
-                String marca = scanner.nextLine();
+                marca = scanner.nextLine();
                 System.out.print("Ingrese la hora de entrada: ");
                 Date horaEntrada = new Date();;
                 System.out.print("Ingrese el parqueo asignado: ");
                 String parqueoAsignado = scanner.nextLine();
                 scanner.nextLine(); // Fin de los datos de la clase Cliente
                 // Creación del objeto Cliente y meterlo al array 
-                ClienteRegular[ClienteRegularcount] = new ClienteRegular(Tipovehiculo,placa, color, marca, horaEntrada, parqueoAsignado);
+                ClienteRegular[ClienteRegularcount] = new ClienteRegular(Tipovehiculo, placa, color, marca, horaEntrada, parqueoAsignado);
                 ClienteRegularcount++; 
                 break;
 
@@ -85,6 +129,5 @@ public class Menu {
 
     }
 
-}
 }
 }
