@@ -1,40 +1,16 @@
-/** Anthony Lou, Andres Mazariegos, Juan Francisco Martinez, Daniela Ramirez 
+import java.util.*;
 
-  * Cliente
- 
-  * @param placa,tarifa 
-  * @throws Es la clase padre de las otras dos
-  */
-//import java.util.*;
 
-public  class Cliente {
-    protected String Tipovehiculo;
+abstract class Cliente {
     protected String placa;
-    protected  String color;
-    protected  String marca;
+    protected String marca;
+    protected String color;
 
-    protected Cliente (String Tipovehiculo,String placa, String color, String marca){
-        this.Tipovehiculo = Tipovehiculo;
+    public Cliente(String placa, String marca, String color) {
         this.placa = placa;
-        this.color = color;
         this.marca = marca;
-    }
-    protected String getTipovehiculo(){
-        return Tipovehiculo;
+        this.color = color;
     }
 
-    protected String getPlaca( ) {
-        return placa;
-    }
-    protected String getColor( ) {
-        return color;
-    }
-    protected String getMarca(){
-        return marca; 
-    }
-
-
-    //public double calcularTarifa(Date horaEntrada, Date horaSalida) {
-      //  return 0.0; 
-    }// se finalizan los getters del objeto ClienteRegular
-
+    public abstract Date getHoraEntrada();
+}

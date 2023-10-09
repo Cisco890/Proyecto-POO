@@ -1,30 +1,24 @@
-/** Anthony Lou, Andres Mazariegos, Juan Francisco Martinez, Daniela Ramirez 
+import java.util.*;
 
-  * Cliente
- 
-  * @param placa,tarifa 
-  * @throws Es la clase padre de las otras dos
-  */
-public class Residente extends Cliente{
-    private String nombre;
-    private String placa;
-    private String Tipovehiculo;
-    private String color;
-    private String marca;
-    
-    public Residente(String nombre, String Tipovehiculo, String placa, String color, String marca) {
-        super(Tipovehiculo, placa, color, marca);
-        this.nombre = nombre;
-        this.placa = placa;
-        this.Tipovehiculo = Tipovehiculo;
-        this.color = color;
-        this.marca = marca;
+class Residente extends Cliente {
+    private boolean residenteVerificado;
+
+    public Residente(String placa, String marca, String color, boolean residenteVerificado) {
+        super(placa, marca, color);
+        this.residenteVerificado = residenteVerificado;
     }
 
-    public String getnombre(){
-        return nombre;
+    public boolean esResidenteVerificado() {
+        return residenteVerificado;
     }
-// se finalizan los getters del objeto ClienteRegular
 
+    public double calcularTarifa(int meses) {
+        double costoPorMes = 500.0;
+        double costoTotal = costoPorMes * meses;
+        return costoTotal;
+    }
+
+    public Date getHoraEntrada() {
+        return null;
+    }
 }
-
