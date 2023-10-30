@@ -1,25 +1,17 @@
-/** Anthony Lou, Andres Mazariegos, Juan Francisco Martinez, Daniela Ramirez 
-
-  * Cliente
- 
-  * @param placa,marca,color 
-  * @throws Es la clase padre de las otras dos
-  */
-
-
-import java.util.*;
-
+import java.util.*; 
 
 abstract class Cliente {
     protected String placa;
     protected String marca;
     protected String color;
-//atributos de la clase
+    protected Date horaEntrada;
+    protected Date horaSalida;
+
     public Cliente(String placa, String marca, String color) {
         this.placa = placa;
         this.marca = marca;
-        this.color = color;//setters de los atributos
+        this.color = color;
     }
 
-    public abstract Date getHoraEntrada();//get hora de entrada
+    public abstract void CalcularTarifa(Date horaEntrada, Date horaSalida);
 }
