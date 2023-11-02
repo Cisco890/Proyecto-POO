@@ -1,9 +1,7 @@
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class ParqueoMain {
@@ -12,10 +10,36 @@ public class ParqueoMain {
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
     private static SimpleDateFormat dateFormatResidente = new SimpleDateFormat("dd/MM/yyyy");
     private static double totalGananciasClientesRegulares = 0.0; // Agregamos una variable para rastrear las ganancias.
-    public static int meses;
+    public static double meses;
 
     public static void main(String[] args) {
+        //Lector de Clientes regulares 
         Scanner scanner = new Scanner(System.in);
+        ArrayList<Cliente> clientes = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader("DatosClientesRegulares.csv"))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split(",");
+            String placa = datos[0];
+            String marca = datos[2];
+            String color = datos[1];
+            SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
+            try {
+                Date entry = formatoHora.parse(datos[3]);
+                Date sali = formatoHora.parse(datos[4]);
+
+                ClienteRegular cliente = new ClienteRegular(placa, marca, color, entry, sali);
+                clientes.add(cliente);
+            } catch (ParseException e) {
+            // Manejar la excepción aquí, por ejemplo, imprimir un mensaje de error
+                System.out.println("Error al parsear la hora: " + e.getMessage());
+            }
+        }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
 
         while (true) {
             System.out.println("Seleccione una opción:");
@@ -40,6 +64,9 @@ public class ParqueoMain {
                     System.out.println("Saliendo del programa.");
                     scanner.close();
                     System.exit(0);
+                case 5 :
+
+                    break;
                 default:
                     System.out.println("Opción no válida. Intente de nuevo.");
             }
@@ -143,6 +170,7 @@ public class ParqueoMain {
                     System.out.println("¿Cuántos meses desea pagar?");
                     int meses = scanner.nextInt();
                     double costoTotal = residente.calcularTarifa(meses);
+                    
                     System.out.println("El costo del estacionamiento para " + meses + " meses es: " + costoTotal + " quetzales.");
                 } else {
                     System.out.println("No se encontró al Residente con la placa especificada.");
