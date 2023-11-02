@@ -13,9 +13,10 @@ public class ParqueoMain {
     public static double meses;
 
     public static void main(String[] args) {
-        //Lector de Clientes regulares 
+      
         Scanner scanner = new Scanner(System.in);
         ArrayList<Cliente> clientes = new ArrayList<>();
+  //Lector de Clientes regulares 
         try (BufferedReader reader = new BufferedReader(new FileReader("DatosClientesRegulares.csv"))) {
         String linea;
         while ((linea = reader.readLine()) != null) {
@@ -24,6 +25,7 @@ public class ParqueoMain {
             String marca = datos[2];
             String color = datos[1];
             SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
+            
             try {
                 Date entry = formatoHora.parse(datos[3]);
                 Date sali = formatoHora.parse(datos[4]);
@@ -38,6 +40,27 @@ public class ParqueoMain {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //Lector Residentes
+        try (BufferedReader reader = new BufferedReader(new FileReader("Residentes.csv"))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split(",");
+            String placa = datos[0];
+            String marca = datos[2];
+            String color = datos[1];
+            boolean verified= Boolean.parseBoolean(datos[3]);
+            try {
+              
+
+                Residente cliente = new Residente(placa, marca, color,verified);
+                clientes.add(cliente);
+            } catch (IOException e) {
+            e.printStackTrace();
+        }
+        }
+        
+
+
 
 
 
@@ -170,7 +193,7 @@ public class ParqueoMain {
                     System.out.println("¿Cuántos meses desea pagar?");
                     int meses = scanner.nextInt();
                     double costoTotal = residente.calcularTarifa(meses);
-                    
+
                     System.out.println("El costo del estacionamiento para " + meses + " meses es: " + costoTotal + " quetzales.");
                 } else {
                     System.out.println("No se encontró al Residente con la placa especificada.");
