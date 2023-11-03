@@ -1,16 +1,15 @@
 import java.util.*;
+import java.time.LocalDateTime;
 
 public class MovimientoRegular implements Movimiento {
 
     private String placa;
-    private Date horaEntrada;
-    private Date horaSalida;
+    private LocalDateTime horaEntrada;
+    private LocalDateTime horaSalida;
     private Date fecha;
 
     public MovimientoRegular(String placa, Date horaEntrada, Date horaSalida, Date fecha){
        this.placa = placa;
-       this.horaEntrada = horaEntrada;
-       this.horaSalida = horaSalida;
        this.fecha = fecha;
     }
 
@@ -18,12 +17,21 @@ public class MovimientoRegular implements Movimiento {
         return placa;
     }
 
-    public Date gethoraEntrada(){
-        return horaEntrada;
+    public void horaEntrada(){
+        LocalDateTime horaEntrada = LocalDateTime.now();
+        this.horaEntrada = horaEntrada;
     }
 
-    public Date gethoraSalida(){
-        return horaSalida;
+    public LocalDateTime gethoraEntrada(){
+        return this.horaEntrada;
+    }
+
+    public void horaSalida(){
+        LocalDateTime horaSalida = LocalDateTime.now();
+        this.horaSalida = horaSalida;
+    }
+    public LocalDateTime gethoraSalida(){
+        return this.horaSalida;
     }
 
     public Date getfecha(){

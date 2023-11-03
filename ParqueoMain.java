@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 
 public class ParqueoMain {
-    private static List<ClienteRegular> clientesRegulares = new ArrayList<>();
+    private static List<Movimiento> movimientos = new ArrayList<>();
     private static List<Residente> residentes = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -52,8 +52,13 @@ public class ParqueoMain {
         int tipoCliente = scanner.nextInt();
 
         scanner.nextLine(); 
-
-        switch (tipoCliente) {
+        for (Movimiento movimiento : movimientos) {
+            if (movimiento instanceof MovimientoRegular) {
+                MovimientoRegular regular = (MovimientoRegular) movimiento;
+                
+            }
+        }
+        if () {
             case 1:
                 System.out.println("Ingrese el número de placa del vehículo:");
                 String placaClienteRegular = scanner.nextLine();
