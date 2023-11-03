@@ -1,32 +1,33 @@
+import java.time.LocalDateTime;
 import java.util.*;
 
 class ClienteRegular extends Cliente {
     int hours;
     int minutes;
     int seconds;
-    Date horaEntrada;
-    Date horaSalida;
+    LocalDateTime horaEntrada;
+    LocalDateTime horaSalida;
 
-    public ClienteRegular(String placa, String marca, String color, Date horaEntrada, Date horaSalida) {
+    public ClienteRegular(String placa, String marca, String color, LocalDateTime horaEntrada, LocalDateTime horaSalida) {
         super(placa, marca, color);
         this.horaEntrada = horaEntrada;
         this.horaSalida = horaSalida;
     
     }
 
-    public Date gethoraEntrada(){
+    public LocalDateTime gethoraEntrada(){
         return horaEntrada;
     }
 
-    public Date gethoraSalida(){
+    public LocalDateTime gethoraSalida(){
         return horaSalida;
     }
 
     public void CalcularTarifa(Date horaEntrada, Date horaSalida) {
         double tarifaPorHora = 10.0;
-    
-        double costoTotal = (horaSalida.getTime()-horaEntrada.getTime())* tarifaPorHora;
+        long diferenciaTiempo = horaSalida.getTime() - horaEntrada.getTime();
+        double horasRedondeadas = Math.ceil((double) diferenciaTiempo / 3600000); // 3600000 ms = 1 hora
+        double costoTotal = horasRedondeadas * tarifaPorHora;
         System.out.println(costoTotal);
     }
-
 }

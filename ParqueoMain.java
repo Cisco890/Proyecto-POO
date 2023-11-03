@@ -1,68 +1,18 @@
 import java.io.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Scanner;
 
 
 public class ParqueoMain {
     private static List<ClienteRegular> clientesRegulares = new ArrayList<>();
     private static List<Residente> residentes = new ArrayList<>();
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-    private static SimpleDateFormat dateFormatResidente = new SimpleDateFormat("dd/MM/yyyy");
-    private static double totalGananciasClientesRegulares = 0.0; // Agregamos una variable para rastrear las ganancias.
-    public static double meses;
 
     public static void main(String[] args) {
-      
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Cliente> clientes = new ArrayList<>();
-  //Lector de Clientes regulares 
-        try (BufferedReader reader = new BufferedReader(new FileReader("DatosClientesRegulares.csv"))) {
-        String linea;
-        while ((linea = reader.readLine()) != null) {
-            String[] datos = linea.split(",");
-            String placa = datos[0];
-            String marca = datos[2];
-            String color = datos[1];
-            SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
-            
-            try {
-                Date entry = formatoHora.parse(datos[3]);
-                Date sali = formatoHora.parse(datos[4]);
-
-                ClienteRegular cliente = new ClienteRegular(placa, marca, color, entry, sali);
-                clientes.add(cliente);
-            } catch (ParseException e) {
-            // Manejar la excepción aquí, por ejemplo, imprimir un mensaje de error
-                System.out.println("Error al parsear la hora: " + e.getMessage());
-            }
-        }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //Lector Residentes
-        try (BufferedReader reader = new BufferedReader(new FileReader("Residentes.csv"))) {
-        String linea;
-        while ((linea = reader.readLine()) != null) {
-            String[] datos = linea.split(",");
-            String placa = datos[0];
-            String marca = datos[2];
-            String color = datos[1];
-            boolean verified= Boolean.parseBoolean(datos[3]);
-            try {
-              
-
-                Residente cliente = new Residente(placa, marca, color,verified);
-                clientes.add(cliente);
-            } catch (IOException e) {
-            e.printStackTrace();
-        }
-        }
-        
-
-
-
-
 
         while (true) {
             System.out.println("Seleccione una opción:");
@@ -75,28 +25,27 @@ public class ParqueoMain {
 
             switch (opcion) {
                 case 1:
-                    registrarVehiculo(scanner);
+                    ingresoVehiculo(scanner);
                     break;
                 case 2:
-                    calcularCobro(scanner);
+                    salidaVehiculo(scanner);
                     break;
                 case 3:
-                    mostrarEstadisticas();
+                    registrarResidente(scanner);
                     break;
                 case 4:
+                    imprimirInforme(scanner);
+                case 5: 
                     System.out.println("Saliendo del programa.");
                     scanner.close();
                     System.exit(0);
-                case 5 :
-
-                    break;
                 default:
                     System.out.println("Opción no válida. Intente de nuevo.");
             }
         }
     }
 
-    private static void registrarVehiculo(Scanner scanner) {
+    private static void ingresoVehiculo(Scanner scanner) {
         System.out.println("Seleccione el tipo de cliente:");
         System.out.println("1. Cliente Regular");
         System.out.println("2. Residente");
@@ -108,18 +57,15 @@ public class ParqueoMain {
             case 1:
                 System.out.println("Ingrese el número de placa del vehículo:");
                 String placaClienteRegular = scanner.nextLine();
-                System.out.println("Ingrese el color del vehículo:");
-                String colorClienteRegular = scanner.nextLine();
-                System.out.println("Ingrese la marca del vehículo:");
-                String marcaClienteRegular = scanner.nextLine();
-                Date horaEntradaClienteRegular = new Date(); // Hora actual
-                ClienteRegular clienteRegular = new ClienteRegular(placaClienteRegular, marcaClienteRegular, colorClienteRegular, horaEntradaClienteRegular);
+                LocalDateTime horaEntrada = LocalDateTime.now();
+                ClienteRegular clienteRegular = new ClienteRegular(placaClienteRegular, colorClienteRegular, marcaClienteRegular, horaEntrada);
                 clientesRegulares.add(clienteRegular);
                 System.out.println("Se registró el vehículo del Cliente Regular con éxito.");
 
 
-                guardarDatosClienteRegularCSV(placaClienteRegular, colorClienteRegular, marcaClienteRegular, dateFormat.format(horaEntradaClienteRegular));
+                guardarDatosClienteRegularCSV(placaClienteRegular, colorClienteRegular, marcaClienteRegular, horaEntrada);
                 break;
+                
             case 2:
                 System.out.println("Ingrese el número de placa del vehículo del Residente:");
                 String placaResidente = scanner.nextLine();
@@ -127,21 +73,35 @@ public class ParqueoMain {
                 String colorResidente = scanner.nextLine();
                 System.out.println("Ingrese la marca del vehículo del Residente:");
                 String marcaResidente = scanner.nextLine();
-                System.out.println("¿El residente está verificado? (Sí/No):");
-                String verificadoResidente = scanner.nextLine();
-                boolean residenteVerificado = verificadoResidente.equalsIgnoreCase("Sí");
-                Residente residente = new Residente(placaResidente, marcaResidente, colorResidente, residenteVerificado);
-                residentes.add(residente);
-                System.out.println("Se registró al Residente con éxito.");
-
-                guardarDatosResidenteCSV(placaResidente, marcaResidente, colorResidente, verificadoResidente);
+                
+                boolean residenteEncontrado = false;
+            
+                for (Residente residente : residentes) {
+                    if (residente.getPlaca().equalsIgnoreCase(placaResidente)) {
+                        System.out.println("El residente está verificado");
+                        residenteEncontrado = true;
+                        break;
+                    } else if (residente.isPagoSolvente()) {
+                        System.out.println("El residente está solvente de sus pagos");
+                        Residente nuevoResidente = new Residente(placaResidente, marcaResidente, colorResidente, true, true);
+                        residentes.add(nuevoResidente);
+                        System.out.println("Se registró al Residente con éxito.");
+                        guardarDatosResidenteCSV(placaResidente, marcaResidente, colorResidente, true, true);
+                        residenteEncontrado = true;
+                        break;
+                    }
+                }
+                
+                if (!residenteEncontrado) {
+                    System.out.println("Residente no verificado/Residente con pagos pendientes");
+                }
                 break;
             default:
                 System.out.println("Opción no válida.");
+            }
         }
-    }
 
-    private static void guardarDatosClienteRegularCSV(String placa, String color, String marca, String horaEntrada) {
+    private static void guardarDatosClienteRegularCSV(String placa, String color, String marca, LocalDateTime horaEntrada) {
         try (PrintWriter writer = new PrintWriter(new FileWriter("DatosClientesRegulares.csv", true))) {
             writer.println(placa + "," + color + "," + marca + "," + horaEntrada);
         } catch (IOException e) {
@@ -157,7 +117,7 @@ public class ParqueoMain {
         }
     }
 
-    private static void calcularCobro(Scanner scanner) {
+    private static void salidaVehiculo(Scanner scanner) {
         System.out.println("Seleccione el tipo de cliente:");
         System.out.println("1. Cliente Regular");
         System.out.println("2. Residente");
@@ -193,7 +153,6 @@ public class ParqueoMain {
                     System.out.println("¿Cuántos meses desea pagar?");
                     int meses = scanner.nextInt();
                     double costoTotal = residente.calcularTarifa(meses);
-
                     System.out.println("El costo del estacionamiento para " + meses + " meses es: " + costoTotal + " quetzales.");
                 } else {
                     System.out.println("No se encontró al Residente con la placa especificada.");

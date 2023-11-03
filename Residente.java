@@ -1,23 +1,48 @@
-import java.util.*;
+import java.time.LocalDateTime;
 
-class Residente extends Cliente {
-    private boolean residenteVerificado;
+public class Residente extends Movimiento {
+    boolean residenteVerificado;
+    boolean pagoSolvente;
+    int hours;
+    int minutes;
+    int seconds;
+    LocalDateTime horaEntrada;
+    LocalDateTime horaSalida;
 
-    public Residente(String placa, String marca, String color, boolean residenteVerificado) {
+
+    public Residente(String placa, String marca, String color, boolean residenteVerificado, boolean pagoSolvente) {
         super(placa, marca, color);
-        this.residenteVerificado = residenteVerificado;
+        this.placa=placa;
+        this.marca=marca;
+        this.color=color;
     }
 
-    public boolean esResidenteVerificado() {
-        return residenteVerificado;
+    public LocalDateTime gethoraEntrada(){
+        return horaEntrada;
     }
 
-    public Date getHoraEntrada() {
-        return null;
+    public LocalDateTime gethoraSalida(){
+        return horaSalida;
     }
 
-    public double calcularTarifa(Date horaSalida) {
-        int costoTotal=ParqueoMain.meses*500;
-        return costoTotal; // Cambia esto según el cálculo real
+    public String getPlaca(){
+        return this.placa;
     }
+
+    public String getMarca(){
+        return this.marca;
+    }
+
+    public String getColor(){
+        return this.color;
+    }
+
+    public void residenteVerificado() {
+        residenteVerificado=true;
+    }
+
+    public void pagoSolvente() {
+        pagoSolvente=true;
+    }
+
 }
