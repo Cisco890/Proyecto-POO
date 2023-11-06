@@ -1,32 +1,28 @@
-import java.util.*;
-public class MovimientoResidente implements Movimiento {
+import java.time.LocalDateTime;
+
+public class MovimientoResidente extends Movimiento {
 
     private String placa;
-    private Date horaEntrada;
-    private Date horaSalida;
-    private Date fecha;
+    private LocalDateTime horaEntrada;
+    private LocalDateTime horaSalida;
 
-    public MovimientoResidente(String placa, Date horaEntrada, Date horaSalida, Date fecha){
-       this.placa = placa;
-       this.horaEntrada = horaEntrada;
-       this.horaSalida = horaSalida;
-       this.fecha = fecha;
+    public MovimientoResidente(String placa, LocalDateTime horaEntrada, LocalDateTime horaSalida){
+        super(placa, horaEntrada, horaSalida);
+        this.placa = placa;
+        this.horaEntrada = horaEntrada;
+        this.horaSalida = horaSalida;
     }
 
     public String getplaca(){
         return placa;
     }
 
-    public Date gethoraEntrada(){
+    public LocalDateTime gethoraEntrada(){
         return horaEntrada;
     }
 
-    public Date gethoraSalida(){
+    public LocalDateTime gethoraSalida(){
         return horaSalida;
-    }
-
-    public Date getfecha(){
-        return fecha;
     }
 
     public void ingresoVehiculo(){
@@ -34,6 +30,10 @@ public class MovimientoResidente implements Movimiento {
     }
     public void salidaVehiculo(){
 
+    }
+
+    public String getPlaca() {
+        return null;
     }
 
     

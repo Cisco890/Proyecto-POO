@@ -25,16 +25,16 @@ public class ParqueoMain {
 
             switch (opcion) {
                 case 1:
-                    ingresoVehiculo(scanner);
+                    ingresoVehiculo();
                     break;
                 case 2:
-                    salidaVehiculo(scanner);
+                    salidaVehiculo();
                     break;
                 case 3:
-                    registrarResidente(scanner);
+                    registrarResidente();
                     break;
                 case 4:
-                    imprimirInforme(scanner);
+                    imprimirInforme();
                 case 5: 
                     System.out.println("Saliendo del programa.");
                     scanner.close();
@@ -45,166 +45,110 @@ public class ParqueoMain {
         }
     }
 
-    private static void ingresoVehiculo(Scanner scanner) {
-        System.out.println("Seleccione el tipo de cliente:");
-        System.out.println("1. Cliente Regular");
-        System.out.println("2. Residente");
-        int tipoCliente = scanner.nextInt();
+    private static void ingresoVehiculo() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese la placa del vehículo: ");
+        String placa = scanner.nextLine();
+        for (Residente residente : residentes) {
+            if (residente.getPlaca().equals(placa)) {
+                System.out.println("Se identifico al usuario como residente!"); 
+                System.out.println("Verificando si a pagado...");
+                if(residente.tienePagoSolvente() == true){
 
-        scanner.nextLine(); 
+                    System.out.println("Usuario esta al dia en sus pagos, registrando informacion de movimiento..."); 
+                    MovimientoResidente movimiento = new MovimientoResidente(placa, null, null, null, 0);
+                    movimiento.gethoraEntrada();
+                    movimientos.add(movimiento);
+
+                } else if(residente.tienePagoSolvente() == false){
+
+                    System.out.println("Usuario no al dia en sus pagos, quiere realizarlo ahorita?"); 
+                    int ans1 = scanner.nextInt();
+                    System.out.println("1. Si realizara el pago en este instante"); 
+                    System.out.println("2. No realizara el pago en este instante"); 
+
+                    if(ans1 == 1){  //Aun esta pendeinte ver caunto tendra que pagar al mes, este valor es ajeno e inventado solo por conveniencia actual
+
+                        System.out.println("Su total son 100 Quetzales"); 
+                        System.out.println("Pago registrado! Ingresando al residente..."); 
+                        MovimientoResidente movimiento = new MovimientoResidente(placa, null, null, null, 100);
+                        movimiento.horaEntrada();
+                        movimientos.add(movimiento);
+
+                    } else if(ans1 == 2){
+
+                        System.out.println("Que tenga un buen dia, de media vuelta! (Desgraciado)"); 
+                    }
+                }
+            }
+        }
+    }
+        
+
+    private static void guardarMovimientosGenerales(String placa, LocalDateTime horaEntrada, LocalDateTime horaSalida, double redondear, double total) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("Movimientos.csv", true))) {
+            for (Movimiento movimiento : movimientos) {
+                if (movimiento instanceof MovimientoRegular){
+                    writer.println("Cliente Regular" + "," +placa + "," + horaEntrada + "," + horaSalida + "," + redondear + "," + total);
+                }
+                if (movimiento instanceof MovimientoResidente){
+                    writer.println("Residente" + "," +placa + "," + horaEntrada + "," + horaSalida + "," + redondear + "," + total);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void guardarResidentes(String placa, String marca, String color, String modelo, Boolean pagoSolvente) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("Residentes.csv", true))) {
+            writer.println(placa + "," + marca + "," + color + "," + modelo + "," +  pagoSolvente);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void salidaVehiculo() {
+        double tarifa = 10;
         for (Movimiento movimiento : movimientos) {
             if (movimiento instanceof MovimientoRegular) {
                 MovimientoRegular regular = (MovimientoRegular) movimiento;
-                
+                LocalDateTime horaEntrada = regular.gethoraEntrada();
+                LocalDateTime horaSalida = regular.gethoraSalida();
+                long diferenciaTiempo = java.time.Duration.between(horaEntrada,horaSalida).toMillis();
+                double redondear = Math.ceil((double)diferenciaTiempo/3600000);
+                double total = redondear*tarifa;
+                System.out.println("El cliente con placa " + regular.getplaca() + " debe pagar" + total + " Quetzales");
+            }
+            else{
+                MovimientoResidente mresidente = (MovimientoResidente) movimiento;
+                LocalDateTime horaEntrada = mresidente.gethoraEntrada();
+                LocalDateTime horaSalida = mresidente.gethoraSalida();
+                long diferenciaTiempo = java.time.Duration.between(horaEntrada, horaSalida).toMillis();
+                double redondear = Math.ceil((double)diferenciaTiempo/3600000);
+                double total = 0;
+                System.out.println("El residente con placa " + mresidente.getplaca() + " Se ha retirado del estacionamiento");
+                movimientos.add(new Movimiento(mresidente.getPlaca(), horaEntrada, horaSalida));
             }
         }
-        if () {
-            case 1:
-                System.out.println("Ingrese el número de placa del vehículo:");
-                String placaClienteRegular = scanner.nextLine();
-                LocalDateTime horaEntrada = LocalDateTime.now();
-                ClienteRegular clienteRegular = new ClienteRegular(placaClienteRegular, colorClienteRegular, marcaClienteRegular, horaEntrada);
-                clientesRegulares.add(clienteRegular);
-                System.out.println("Se registró el vehículo del Cliente Regular con éxito.");
-
-
-                guardarDatosClienteRegularCSV(placaClienteRegular, colorClienteRegular, marcaClienteRegular, horaEntrada);
-                break;
-                
-            case 2:
-                System.out.println("Ingrese el número de placa del vehículo del Residente:");
-                String placaResidente = scanner.nextLine();
-                System.out.println("Ingrese el color del vehículo del Residente:");
-                String colorResidente = scanner.nextLine();
-                System.out.println("Ingrese la marca del vehículo del Residente:");
-                String marcaResidente = scanner.nextLine();
-                
-                boolean residenteEncontrado = false;
-            
-                for (Residente residente : residentes) {
-                    if (residente.getPlaca().equalsIgnoreCase(placaResidente)) {
-                        System.out.println("El residente está verificado");
-                        residenteEncontrado = true;
-                        break;
-                    } else if (residente.isPagoSolvente()) {
-                        System.out.println("El residente está solvente de sus pagos");
-                        Residente nuevoResidente = new Residente(placaResidente, marcaResidente, colorResidente, true, true);
-                        residentes.add(nuevoResidente);
-                        System.out.println("Se registró al Residente con éxito.");
-                        guardarDatosResidenteCSV(placaResidente, marcaResidente, colorResidente, true, true);
-                        residenteEncontrado = true;
-                        break;
-                    }
-                }
-                
-                if (!residenteEncontrado) {
-                    System.out.println("Residente no verificado/Residente con pagos pendientes");
-                }
-                break;
-            default:
-                System.out.println("Opción no válida.");
-            }
-        }
-
-    private static void guardarDatosClienteRegularCSV(String placa, String color, String marca, LocalDateTime horaEntrada) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter("DatosClientesRegulares.csv", true))) {
-            writer.println(placa + "," + color + "," + marca + "," + horaEntrada);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    private static void guardarDatosResidenteCSV(String placa, String marca, String color, String verificado) {
-        try (PrintWriter writer = new PrintWriter(new FileWriter("Residentes.csv", true))) {
-            writer.println(placa + "," + marca + "," + color + "," + verificado);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+    private static void registrarResidente() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese la placa del residente: ");
+        String placa = scanner.nextLine();
+        System.out.println("Ingrese la marca del vehículo del residente: ");
+        String marca = scanner.nextLine();
+        System.out.println("Ingrese el color del vehículo del residente: ");
+        String color = scanner.nextLine();
+        System.out.println("Ingrese el modelo del vehículo del residente: ");
+        String modelo = scanner.nextLine();
+        System.out.println("¿El residente desea pagar la mensualidad del parqueo del mes actual? Si/No");
+        String pagoSolvente = scanner.nextLine();
+        residentes.add(new Residente(placa,marca,color,modelo,pagoSolvente));
+        System.out.println("Se registró al Residente con éxito.");
+        guardarResidentes(placa, marca, color, modelo, null);
     }
 
-    private static void salidaVehiculo(Scanner scanner) {
-        System.out.println("Seleccione el tipo de cliente:");
-        System.out.println("1. Cliente Regular");
-        System.out.println("2. Residente");
-        int tipoCliente = scanner.nextInt();
-        scanner.nextLine();
-
-        switch (tipoCliente) {
-            case 1:
-                System.out.println("Ingrese la hora de salida (formato HH:mm):");
-                String horaSalidaStr = scanner.nextLine();
-                try {
-                    Date horaSalidaClienteRegular = dateFormat.parse(horaSalidaStr);
-                    System.out.println("Ingrese el número de placa del vehículo del Cliente Regular:");
-                    String placaClienteRegular = scanner.nextLine();
-                    ClienteRegular clienteRegular = buscarClienteRegularPorPlaca(placaClienteRegular);
-
-                    if (clienteRegular != null) {
-                        double tarifa = clienteRegular.calcularTarifa(clienteRegular.getHoraEntrada(), horaSalidaClienteRegular);
-                        System.out.println("El costo del estacionamiento es: " + tarifa + " quetzales.");
-                    } else {
-                        System.out.println("No se encontró al Cliente Regular con la placa especificada.");
-                    }
-                } catch (Exception e) {
-                    System.out.println("Hora de salida inválida.");
-                }
-                break;
-            case 2:
-                System.out.println("Ingrese la placa del vehículo del Residente:");
-                String placaResidente = scanner.nextLine();
-                Residente residente = buscarResidentePorPlaca(placaResidente);
-
-                if (residente != null) {
-                    System.out.println("¿Cuántos meses desea pagar?");
-                    int meses = scanner.nextInt();
-                    double costoTotal = residente.calcularTarifa(meses);
-                    System.out.println("El costo del estacionamiento para " + meses + " meses es: " + costoTotal + " quetzales.");
-                } else {
-                    System.out.println("No se encontró al Residente con la placa especificada.");
-                }
-                break;
-            default:
-                System.out.println("Opción no válida.");
-        }
-    }
-
-    private static void mostrarEstadisticas() {
-        int totalClientesRegulares = clientesRegulares.size();
-        double totalGananciasClientesRegulares = 0.0;
-        double totalGananciasResidentes = 0.0;
-
-        for (ClienteRegular clienteRegular : clientesRegulares) {
-            totalGananciasClientesRegulares += clienteRegular.calcularTarifa(clienteRegular.getHoraEntrada(), new Date());
-        }
-
-        for (Residente residente : residentes) {
-            if (residente.esResidenteVerificado()) {
-                System.out.println("Vehículo con placa " + residente.placa + " pagó " + (residente.calcularTarifa(1) / 500) + " meses del servicio de parqueo.");
-                totalGananciasResidentes += residente.calcularTarifa(1);
-            }
-        }
-
-        System.out.println("Estadísticas del día:");
-        System.out.println("Total de clientes regulares: " + totalClientesRegulares);
-        System.out.println("Total de ganancias de clientes regulares: " + totalGananciasClientesRegulares + " quetzales.");
-        System.out.println("Total de ganancias de residentes: " + totalGananciasResidentes + " quetzales.");
-    }
-
-    private static ClienteRegular buscarClienteRegularPorPlaca(String placa) {
-        for (ClienteRegular clienteRegular : clientesRegulares) {
-            if (clienteRegular.placa.equalsIgnoreCase(placa)) {
-                return clienteRegular;
-            }
-        }
-        return null;
-    }
-
-    private static Residente buscarResidentePorPlaca(String placa) {
-        for (Residente residente : residentes) {
-            if (residente.placa.equalsIgnoreCase(placa)) {
-                return residente;
-            }
-        }
-        return null;
-    }
 }

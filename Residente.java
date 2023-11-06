@@ -1,28 +1,17 @@
-import java.time.LocalDateTime;
-
-public class Residente extends Movimiento {
+public class Residente {
     boolean residenteVerificado;
     boolean pagoSolvente;
-    int hours;
-    int minutes;
-    int seconds;
-    LocalDateTime horaEntrada;
-    LocalDateTime horaSalida;
+    private String placa;
+    private String marca;
+    private String color;
+    private String modelo;
 
 
-    public Residente(String placa, String marca, String color, boolean residenteVerificado, boolean pagoSolvente) {
-        super(placa, marca, color);
+    public Residente(String placa, String marca, String color, String modelo, boolean pagoSolvente) {
         this.placa=placa;
         this.marca=marca;
         this.color=color;
-    }
-
-    public LocalDateTime gethoraEntrada(){
-        return horaEntrada;
-    }
-
-    public LocalDateTime gethoraSalida(){
-        return horaSalida;
+        this.modelo=modelo;
     }
 
     public String getPlaca(){
@@ -37,12 +26,20 @@ public class Residente extends Movimiento {
         return this.color;
     }
 
-    public void residenteVerificado() {
-        residenteVerificado=true;
+    public String getModelo(){
+        return this.modelo;
     }
 
-    public void pagoSolvente() {
-        pagoSolvente=true;
+    public void pagoSolvente(String pagoSolvente) {
+        if (pagoSolvente.equalsIgnoreCase("Si")) {
+            this.pagoSolvente = true;
+        } else {
+            this.pagoSolvente = false;
+        }
+    }
+
+    public boolean tienePagoSolvente(){
+        return pagoSolvente;
     }
 
 }
