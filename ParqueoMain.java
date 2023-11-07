@@ -56,7 +56,7 @@ public class ParqueoMain {
                 if(residente.tienePagoSolvente() == true){
 
                     System.out.println("Usuario esta al dia en sus pagos, registrando informacion de movimiento..."); 
-                    MovimientoResidente movimiento = new MovimientoResidente(placa, null, null, null, 0);
+                    MovimientoResidente movimiento = new MovimientoResidente(placa, null, null);
                     movimiento.gethoraEntrada();
                     movimientos.add(movimiento);
 
@@ -71,7 +71,7 @@ public class ParqueoMain {
 
                         System.out.println("Su total son 100 Quetzales"); 
                         System.out.println("Pago registrado! Ingresando al residente..."); 
-                        MovimientoResidente movimiento = new MovimientoResidente(placa, null, null, null, 100);
+                        MovimientoResidente movimiento = new MovimientoResidente(placa, null, null);
                         movimiento.horaEntrada();
                         movimientos.add(movimiento);
 
@@ -151,4 +151,8 @@ public class ParqueoMain {
         guardarResidentes(placa, marca, color, modelo, null);
     }
 
+
+    private static void imprimirInforme
+
 }
+
