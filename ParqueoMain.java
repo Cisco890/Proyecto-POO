@@ -147,7 +147,13 @@ public class ParqueoMain {
         String modelo = scanner.nextLine();
         System.out.println("¿El residente desea pagar la mensualidad del parqueo del mes actual? Si/No");
         String pagoSolvente = scanner.nextLine();
-        residentes.add(new Residente(placa,marca,color,modelo,pagoSolvente));
+        if(pagoSolvente.equalsIgnoreCase("si")){
+           residentes.add(new Residente(placa,marca,color,modelo,true));
+        }
+        else if(pagoSolvente.equalsIgnoreCase("no")){
+           residentes.add(new Residente(placa,marca,color,modelo,false));
+        }
+        
         System.out.println("Se registró al Residente con éxito.");
         guardarResidentes(placa, marca, color, modelo, null);
     }

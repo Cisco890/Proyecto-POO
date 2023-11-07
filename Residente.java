@@ -12,6 +12,7 @@ public class Residente {
         this.marca=marca;
         this.color=color;
         this.modelo=modelo;
+        this.pagoSolvente=pagoSolvente;
     }
 
     public String getPlaca(){
@@ -30,13 +31,7 @@ public class Residente {
         return this.modelo;
     }
 
-    public void pagoSolvente(String pagoSolvente) {
-        if (pagoSolvente.equalsIgnoreCase("Si")) {
-            this.pagoSolvente = true;
-        } else {
-            this.pagoSolvente = false;
-        }
-    }
+   
 
     public boolean tienePagoSolvente(){
         return pagoSolvente;
