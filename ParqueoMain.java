@@ -1,6 +1,8 @@
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,9 +21,9 @@ public class ParqueoMain {
             System.out.println("Seleccione una opción:");
             System.out.println("1. Ingreso de un vehículo");
             System.out.println("2. Salida de un vehículo");
-            System.out.println("4. Registrar Residente");
-            System.out.println("5. Imprimir informe");
-            System.out.println("6. Salir");
+            System.out.println("3. Registrar Residente");
+            System.out.println("4. Imprimir informe");
+            System.out.println("5. Salir");
             int opcion = scanner.nextInt();
 
             switch (opcion) {
@@ -35,7 +37,12 @@ public class ParqueoMain {
                     registrarResidente();
                     break;
                 case 4:
-                    imprimirInforme();
+                    System.out.println("Informe de Movimiento por rango de hora");
+                    imprimirInformeMovimiento();
+                    System.out.println("Informe Residentes ");
+                    informeResidentes();
+
+                    
                 case 5: 
                     System.out.println("Saliendo del programa.");
                     scanner.close();
@@ -73,7 +80,7 @@ public class ParqueoMain {
                         System.out.println("Su total son 100 Quetzales"); 
                         System.out.println("Pago registrado! Ingresando al residente..."); 
                         MovimientoResidente movimiento = new MovimientoResidente(placa, null, null);
-                        movimiento.horaEntrada();
+                        movimiento.gethoraEntrada();
                         movimientos.add(movimiento);
 
                     } else if(ans1 == 2){
@@ -159,9 +166,56 @@ public class ParqueoMain {
     }
 
 
-    private static void imprimirInforme(){
-
+  
+    private static void imprimirInformeMovimiento() {
+        Scanner scanner = new Scanner(System.in);
+    
+        System.out.println("Ingrese la hora de inicio (formato: HH:mm):");
+        String horaInicioString = scanner.nextLine();
+        System.out.println("Ingrese la hora de fin (formato: HH:mm):");
+        String horaFinString = scanner.nextLine();
+    
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+            LocalTime horaInicio = LocalTime.parse(horaInicioString, formatter);
+            LocalTime horaFin = LocalTime.parse(horaFinString, formatter);
+    
+            int contador = 0;
+            double ganancias = 0;
+    
+            for (Movimiento movimiento : movimientos) {
+                LocalTime horaEntrada = LocalTime.from(movimiento.getHoraEntrada());
+    
+                if (horaEntrada.isAfter(horaInicio) && horaEntrada.isBefore(horaFin)) {
+                    contador++;
+                    long minutosEstacionado = java.time.Duration.between(horaEntrada, horaFin).toMinutes();
+                    ganancias += Math.ceil((double)minutosEstacionado / 60) * 10;
+                }
+            }
+    
+            System.out.println("Cantidad de carros que entraron entre " + horaInicioString + " y " + horaFinString + ": " + contador);
+            System.out.println("Ganancias entre esas horas: " + ganancias + " quetzales");
+    
+        } catch (Exception e) {
+            System.out.println("Hora no válida. Formato incorrecto.");
+        }
     }
+    public static void informeResidentes() {
+        String archivoCSV = "Residentes.csv"; // Reemplaza con el nombre de tu archivo CSV
+        int contador = 0;
 
+        try (BufferedReader br = new BufferedReader(new FileReader(archivoCSV))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                contador++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Residentes ingresados: " + contador);
+    }
 }
+    
+
 

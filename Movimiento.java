@@ -22,4 +22,7 @@ public class Movimiento{
 
     public void CalcularTarifa(LocalDateTime horaEntrada, LocalDateTime horaSalida) {
     }
+    public LocalDateTime getHoraEntrada(){
+        return this.horaEntrada;
+    }
 }
