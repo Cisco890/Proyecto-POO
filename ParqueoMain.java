@@ -10,6 +10,7 @@ import java.util.Scanner;
 public class ParqueoMain {
     private static List<Movimiento> movimientos = new ArrayList<>();
     private static List<Residente> residentes = new ArrayList<>();
+    
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -152,7 +153,9 @@ public class ParqueoMain {
     }
 
 
-    private static void imprimirInforme
+    private static void imprimirInforme(){
+
+    }
 
 }
 
