@@ -33,7 +33,7 @@ public class MovimientoResidente extends Movimiento {
     }
 
     public String getPlaca() {
-        return null;
+        return placa;
     }
 
     
