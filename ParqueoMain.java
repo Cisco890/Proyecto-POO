@@ -57,56 +57,87 @@ public class ParqueoMain {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Ingrese la placa del vehículo: ");
         String placa = scanner.nextLine();
+        
+        String tipoCliente = "Cliente Regular"; // Por defecto, asumimos que es un cliente regular
+        
         for (Residente residente : residentes) {
             if (residente.getPlaca().equals(placa)) {
-                System.out.println("Se identifico al usuario como residente!"); 
-                System.out.println("Verificando si a pagado...");
-                if(residente.tienePagoSolvente() == true){
-
-                    System.out.println("Usuario esta al dia en sus pagos, registrando informacion de movimiento..."); 
-                    MovimientoResidente movimiento = new MovimientoResidente(placa, null, null);
-                    movimiento.gethoraEntrada();
+                System.out.println("Se identificó al usuario como residente!"); 
+                System.out.println("Verificando si ha pagado...");
+                if (residente.tienePagoSolvente()) {
+                    System.out.println("El usuario está al día en sus pagos, registrando información de movimiento...");
+                    
+                    // Registra la hora de entrada actual.
+                    LocalDateTime horaEntrada = LocalDateTime.now();
+                
+                    // Crea un objeto MovimientoResidente con la hora de entrada y agrega a la lista de movimientos.
+                    MovimientoResidente movimiento = new MovimientoResidente(placa, horaEntrada, null);
                     movimientos.add(movimiento);
-
-                } else if(residente.tienePagoSolvente() == false){
-
-                    System.out.println("Usuario no al dia en sus pagos, quiere realizarlo ahorita?"); 
+                    
+                    tipoCliente = "Residente"; // Cambiamos el tipo de cliente a Residente
+                    
+                    // Llama a la función para guardar el movimiento en el archivo CSV.
+                    guardarMovimientosGenerales(placa, horaEntrada, null, 0.0, 0.0, tipoCliente);
+                } else {
+                    System.out.println("El usuario no está al día en sus pagos, ¿quiere realizarlo ahora?");
                     int ans1 = scanner.nextInt();
-                    System.out.println("1. Si realizara el pago en este instante"); 
-                    System.out.println("2. No realizara el pago en este instante"); 
-
+                    System.out.println("1. Sí, realizará el pago en este instante");
+                    System.out.println("2. No, no realizará el pago en este instante");
+                    
                     if(ans1 == 1){  //Aun esta pendeinte ver caunto tendra que pagar al mes, este valor es ajeno e inventado solo por conveniencia actual
 
                         System.out.println("Su total son 100 Quetzales"); 
                         System.out.println("Pago registrado! Ingresando al residente..."); 
-                        MovimientoResidente movimiento = new MovimientoResidente(placa, null, null);
-                        movimiento.gethoraEntrada();
+                   
+                        LocalDateTime horaEntrada = LocalDateTime.now();
+                    
+                        // Crea un objeto MovimientoResidente con la hora de entrada y agrega a la lista de movimientos.
+                        MovimientoResidente movimiento = new MovimientoResidente(placa, horaEntrada, null);
                         movimientos.add(movimiento);
-
-                    } else if(ans1 == 2){
-
-                        System.out.println("Que tenga un buen dia, de media vuelta! (Desgraciado)"); 
+                    
+                        tipoCliente = "Residente"; // Cambiamos el tipo de cliente a Residente
+                    
+                        // Llama a la función para guardar el movimiento en el archivo CSV.
+                        guardarMovimientosGenerales(placa, horaEntrada, null, 0.0, 0.0, tipoCliente);
+                    } else if (ans1 == 2) {
+                        System.out.println("Que tenga un buen día, ¡de media vuelta! (Desgraciado)");
                     }
                 }
             }
         }
+        
+        // Si llegamos a este punto, significa que el cliente no es un residente.
+        if (!tipoCliente.equals("Residente")) {
+            // Registra la hora de entrada actual.
+            LocalDateTime horaEntrada = LocalDateTime.now();
+    
+            // Crea un objeto Movimiento con la hora de entrada y agrega a la lista de movimientos.
+            Movimiento movimiento = new Movimiento(placa, horaEntrada, null);
+            movimientos.add(movimiento);
+    
+            tipoCliente = "Regular"; // Cambia el tipo de cliente a Cliente Regular
+            
+            // Llama a la función para guardar el movimiento en el archivo CSV.
+            guardarMovimientosGenerales(placa, horaEntrada, null, 0.0, 0.0, tipoCliente);
+            
+            System.out.println("Movimiento registrado para el cliente con placa " + placa);
+        }
     }
+    
+    
         
 
-    private static void guardarMovimientosGenerales(String placa, LocalDateTime horaEntrada, LocalDateTime horaSalida, double redondear, double total) {
+    private static void guardarMovimientosGenerales(String placa, LocalDateTime horaEntrada, LocalDateTime horaSalida, double redondear, double total, String tipoCliente) {
         try (PrintWriter writer = new PrintWriter(new FileWriter("Movimientos.csv", true))) {
-            for (Movimiento movimiento : movimientos) {
-                if (movimiento instanceof MovimientoRegular){
-                    writer.println("Cliente Regular" + "," +placa + "," + horaEntrada + "," + horaSalida + "," + redondear + "," + total);
-                }
-                if (movimiento instanceof MovimientoResidente){
-                    writer.println("Residente" + "," +placa + "," + horaEntrada + "," + horaSalida + "," + redondear + "," + total);
-                }
-            }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String horaEntradaString = horaEntrada.format(formatter);
+            String horaSalidaString = horaSalida != null ? horaSalida.format(formatter) : "";
+            writer.println(tipoCliente + "," + placa + "," + horaEntradaString + "," + horaSalidaString + "," + redondear + "," + total);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    
 
     private static void guardarResidentes(String placa, String marca, String color, String modelo, Boolean pagoSolvente) {
         try (PrintWriter writer = new PrintWriter(new FileWriter("Residentes.csv", true))) {
@@ -156,9 +187,11 @@ public class ParqueoMain {
         String pagoSolvente = scanner.nextLine();
         if(pagoSolvente.equalsIgnoreCase("si")){
            residentes.add(new Residente(placa,marca,color,modelo,true));
+           scanner.close();
         }
         else if(pagoSolvente.equalsIgnoreCase("no")){
            residentes.add(new Residente(placa,marca,color,modelo,false));
+           scanner.close();
         }
         
         System.out.println("Se registró al Residente con éxito.");
@@ -199,6 +232,7 @@ public class ParqueoMain {
         } catch (Exception e) {
             System.out.println("Hora no válida. Formato incorrecto.");
         }
+        scanner.close();
     }
     public static void informeResidentes() {
         String archivoCSV = "Residentes.csv"; // Reemplaza con el nombre de tu archivo CSV
@@ -214,8 +248,6 @@ public class ParqueoMain {
         }
 
         System.out.println("Residentes ingresados: " + contador);
+        
     }
 }
-    
-
-
