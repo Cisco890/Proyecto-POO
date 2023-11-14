@@ -169,35 +169,33 @@ public class ParqueoMain {
   
     private static void imprimirInformeMovimiento() {
         Scanner scanner = new Scanner(System.in);
-    
-        System.out.println("Ingrese la hora de inicio (formato: HH:mm):");
-        String horaInicioString = scanner.nextLine();
-        System.out.println("Ingrese la hora de fin (formato: HH:mm):");
-        String horaFinString = scanner.nextLine();
+
+        System.out.println("Ingrese la fecha de inicio (formato: dd/MM/yyyy HH:mm):");
+        String fechaHoraInicioString = scanner.nextLine();
+        System.out.println("Ingrese la fecha de fin (formato: dd/MM/yyyy HH:mm):");
+        String fechaHoraFinString = scanner.nextLine();
     
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-            LocalTime horaInicio = LocalTime.parse(horaInicioString, formatter);
-            LocalTime horaFin = LocalTime.parse(horaFinString, formatter);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            LocalDateTime fechaHoraInicio = LocalDateTime.parse(fechaHoraInicioString, formatter);
+            LocalDateTime fechaHoraFin = LocalDateTime.parse(fechaHoraFinString, formatter);
     
             int contador = 0;
-            double ganancias = 0;
     
             for (Movimiento movimiento : movimientos) {
-                LocalTime horaEntrada = LocalTime.from(movimiento.getHoraEntrada());
+                LocalDateTime horaEntrada = movimiento.getHoraEntrada();
     
-                if (horaEntrada.isAfter(horaInicio) && horaEntrada.isBefore(horaFin)) {
+                if (horaEntrada.isAfter(fechaHoraInicio) && horaEntrada.isBefore(fechaHoraFin)) {
                     contador++;
-                    long minutosEstacionado = java.time.Duration.between(horaEntrada, horaFin).toMinutes();
-                    ganancias += Math.ceil((double)minutosEstacionado / 60) * 10;
+                    long minutosEstacionado = java.time.Duration.between(horaEntrada, fechaHoraFin).toMinutes();
+
                 }
             }
     
-            System.out.println("Cantidad de carros que entraron entre " + horaInicioString + " y " + horaFinString + ": " + contador);
-            System.out.println("Ganancias entre esas horas: " + ganancias + " quetzales");
-    
+            System.out.println("Cantidad de carros que entraron entre " + fechaHoraInicioString + " y " + fechaHoraFinString + ": " + contador);
+
         } catch (Exception e) {
-            System.out.println("Hora no válida. Formato incorrecto.");
+            System.out.println("Fecha no válida. Formato incorrecto.");
         }
     }
     public static void informeResidentes() {
