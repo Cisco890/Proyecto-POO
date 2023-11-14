@@ -1,3 +1,10 @@
+/** Juan Francisco Martínez 23617, Andrés Mazariegos 21749,  Daniela Ramirez 23053,  Antony Lou Schanwk 23410
+
+  * Residente
+  * @param placa,marca,color,modelo,pagoSolvente
+  * @throws Es la clase que se encarga de crear los residentes para ser guardados en el csv de residentes. 
+
+  */
 public class Residente {
     boolean residenteVerificado;
     boolean pagoSolvente;
@@ -7,7 +14,7 @@ public class Residente {
     private String modelo;
 
 
-    public Residente(String placa, String marca, String color, String modelo, boolean pagoSolvente) {
+    public Residente(String placa, String marca, String color, String modelo, boolean pagoSolvente) {//constructor de Residentes
         this.placa=placa;
         this.marca=marca;
         this.color=color;
@@ -36,5 +43,6 @@ public class Residente {
     public boolean tienePagoSolvente(){
         return pagoSolvente;
     }
+    //getters y setters de Residente
 
 }
