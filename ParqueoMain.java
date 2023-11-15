@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Iterator;
 
 
 public class ParqueoMain {
@@ -22,8 +23,9 @@ public class ParqueoMain {
             System.out.println("1. Ingreso de un vehículo");
             System.out.println("2. Salida de un vehículo");
             System.out.println("3. Registrar Residente");
-            System.out.println("4. Imprimir informe");
-            System.out.println("5. Salir");
+            System.out.println("4. Eliminar Residente");
+            System.out.println("5. Imprimir informe");
+            System.out.println("6. Salir");
             int opcion = scanner.nextInt();
 
             switch (opcion) {
@@ -37,22 +39,27 @@ public class ParqueoMain {
                     registrarResidente();
                     break;
                 case 4:
+                    
+
+                    
+                case 5: 
                     System.out.println("Informe de Movimiento por rango de hora");
                     imprimirInformeMovimiento();
                     System.out.println("Informe Residentes ");
                     informeResidentes();
-
-                    
-                case 5: 
+                
+                case 6:
                     System.out.println("Saliendo del programa.");
                     scanner.close();
                     System.exit(0);
+
                 default:
                     System.out.println("Opción no válida. Intente de nuevo.");
             }
         }
     }
 
+    
     private static void ingresoVehiculo() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Ingrese la placa del vehículo: ");
@@ -116,6 +123,8 @@ public class ParqueoMain {
         }
     }
 
+    
+
     private static void salidaVehiculo() {
         double tarifa = 10;
         for (Movimiento movimiento : movimientos) {
@@ -164,9 +173,12 @@ public class ParqueoMain {
         System.out.println("Se registró al Residente con éxito.");
         guardarResidentes(placa, marca, color, modelo, null);
     }
-
-
-  
+    
+    public static void eliminarPorID(ArrayList<Residente> ResidenteList) {
+        
+    }
+    
+        
     private static void imprimirInformeMovimiento() {
         Scanner scanner = new Scanner(System.in);
 
