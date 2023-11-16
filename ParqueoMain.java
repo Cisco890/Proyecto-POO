@@ -31,8 +31,9 @@ public class ParqueoMain {
             System.out.println("1. Ingreso de un vehículo");
             System.out.println("2. Salida de un vehículo");
             System.out.println("3. Registrar Residente");
-            System.out.println("4. Imprimir informe");
-            System.out.println("5. Salir");
+            System.out.println("4. Eliminar Residente");
+            System.out.println("5. Imprimir informe");
+            System.out.println("6. Salir");
             int opcion = scanner.nextInt();
 
             switch (opcion) {
@@ -46,16 +47,20 @@ public class ParqueoMain {
                     registrarResidente();//opción para registrar nuevos residentes
                     break;
                 case 4:
+                    eliminarPorID(residentes); // opción para eliminar residentes existentes
+                    break;
+                case 5: 
                     System.out.println("Informe de Movimiento por rango de hora");//informe de movimientos dentro del parqueo
                     imprimirInformeMovimiento();
                     System.out.println("Informe Residentes ");//informe de los residentes del parqueo
                     informeResidentes();
                     break;      
-                case 5: 
+                case 6:
                     System.out.println("Saliendo del programa.");//cerrar el programa del parqueo
                     scanner.close();
                     System.exit(0);
                     break;
+
                 default:
                     System.out.println("Opción no válida. Intente de nuevo.");//defensa por si se ingresa otro número
             }
@@ -153,7 +158,7 @@ public class ParqueoMain {
     
 
     private static void guardarResidentes(String placa, String marca, String color, String modelo, Boolean pagoSolvente) {//inicio del metodo para guardar el residentes nuevos en el csv de residentes
-        try (PrintWriter writer = new PrintWriter(new FileWriter("Residentes.csv", true))) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("Residentes.csv", false))) {
             writer.println(placa + "," + marca + "," + color + "," + modelo + "," + (pagoSolvente != null ? pagoSolvente : ""));
         } catch (IOException e) {
             e.printStackTrace();
@@ -246,29 +251,20 @@ public class ParqueoMain {
     }// final del metodo de registrar residentes nuevos
 
     public static void eliminarPorID(List<Residente> ResidenteList) {
-        
         Scanner scanner = new Scanner(System.in);
+        
         System.out.println("Ingrese la placa del residente: ");
-        String placa = scanner.nextLine();
+        String placa = scanner.nextLine().trim(); 
         System.out.println("Ingrese la marca del vehículo del residente: ");
-        String marca = scanner.nextLine();
-
-        Iterator<Residente> iterator = ResidenteList.iterator();
-
-        while (iterator.hasNext()) {
-            Residente elemento = iterator.next();
-           
-            if (elemento.getPlaca().equals(placa)) {
-                if(elemento.getMarca().equals(marca)){
-                    iterator.remove();
-                    System.out.println("Residente con la placa " + placa + " y marca " + marca + " a sido eliminado correctamente.");
-                    return;
-                }
-               
+        String marca = scanner.nextLine().trim(); 
+    
+        for(Residente elemento : ResidenteList){
+            if (elemento.getPlaca().equalsIgnoreCase(placa) && elemento.getMarca().equalsIgnoreCase(marca)) {
+                ResidenteList.remove(elemento);
+                break;
             }
         }
-        
-        System.out.println("No se encontró el residente con placa " + placa);
+        System.out.println("No se encontro al residente buscado");
     }
     
     private static void imprimirInformeMovimiento() {// inicio del metodo para imprimir el informe de movimientos
