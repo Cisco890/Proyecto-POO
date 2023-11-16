@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Iterator;
 //se importan todas las librerías necesarias
 
 public class ParqueoMain {
@@ -243,6 +244,32 @@ public class ParqueoMain {
         System.out.println("----------------------------------------------------------------------------------------------------");
         scanner.nextLine(); 
     }// final del metodo de registrar residentes nuevos
+
+    public static void eliminarPorID(List<Residente> ResidenteList) {
+        
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ingrese la placa del residente: ");
+        String placa = scanner.nextLine();
+        System.out.println("Ingrese la marca del vehículo del residente: ");
+        String marca = scanner.nextLine();
+
+        Iterator<Residente> iterator = ResidenteList.iterator();
+
+        while (iterator.hasNext()) {
+            Residente elemento = iterator.next();
+           
+            if (elemento.getPlaca().equals(placa)) {
+                if(elemento.getMarca().equals(marca)){
+                    iterator.remove();
+                    System.out.println("Residente con la placa " + placa + " y marca " + marca + " a sido eliminado correctamente.");
+                    return;
+                }
+               
+            }
+        }
+        
+        System.out.println("No se encontró el residente con placa " + placa);
+    }
     
     private static void imprimirInformeMovimiento() {// inicio del metodo para imprimir el informe de movimientos
         Scanner scanner = new Scanner(System.in);
@@ -332,6 +359,8 @@ public class ParqueoMain {
     
         cargarResidentesDesdeCSV();
     }// fin del metodo para cargar movimientos del csv
+
+
     
     private static void cargarResidentesDesdeCSV() {// inicio del metodo para cargar los residentes del archivo csv
         try (BufferedReader brResidentes = new BufferedReader(new FileReader("Residentes.csv"))) {
