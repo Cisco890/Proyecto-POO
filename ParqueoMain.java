@@ -7,6 +7,8 @@
 
   */
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -47,7 +49,7 @@ public class ParqueoMain {
                     registrarResidente();//opción para registrar nuevos residentes
                     break;
                 case 4:
-                    eliminarPorID(residentes); // opción para eliminar residentes existentes
+                    eliminarPorID(residentes, "Residentes.csv"); // opción para eliminar residentes existentes
                     break;
                 case 5: 
                     System.out.println("Informe de Movimiento por rango de hora");//informe de movimientos dentro del parqueo
@@ -250,21 +252,61 @@ public class ParqueoMain {
         scanner.nextLine(); 
     }// final del metodo de registrar residentes nuevos
 
-    public static void eliminarPorID(List<Residente> ResidenteList) {
+    public static void eliminarPorID(List<Residente> residenteList, String nombreDocumento) {
         Scanner scanner = new Scanner(System.in);
+
+        System.out.println("----------------------------------------------------------------------------------------------------");
+        System.out.println("Si apacho por accidente, escriba NO en ambas opciones");
+        System.out.println("Ingrese la placa del residente que desea borrar del registro: "); //Registramos los datos a donde verificaremos su eliminacion
+        String placa = scanner.nextLine().trim();
+        System.out.println("Ingrese la marca del vehículo del residente que desea borrar: ");
+        String marca = scanner.nextLine().trim();
+        System.out.println("----------------------------------------------------------------------------------------------------");
         
-        System.out.println("Ingrese la placa del residente: ");
-        String placa = scanner.nextLine().trim(); 
-        System.out.println("Ingrese la marca del vehículo del residente: ");
-        String marca = scanner.nextLine().trim(); 
-    
-        for(Residente elemento : ResidenteList){
-            if (elemento.getPlaca().equalsIgnoreCase(placa) && elemento.getMarca().equalsIgnoreCase(marca)) {
-                ResidenteList.remove(elemento);
-                break;
+
+        // Copiar la lista para evitar ConcurrentModificationException
+        List<Residente> copiaResidentes = new ArrayList<>(residenteList); //Se hace una copia de la lista actual de residentes
+
+        try (BufferedReader brResidentes = new BufferedReader(new FileReader(nombreDocumento)); //Abrimos dos diferentes documentos, el actual y uno temporal para los datos
+             BufferedWriter bwResidentes = new BufferedWriter(new FileWriter("temp.csv"))) {
+
+            String line;
+            while ((line = brResidentes.readLine()) != null) { //Revisamos que hayan datos en el CSV
+                String[] residenteData = line.split(",");
+                String placaCSV = residenteData[0].trim(); //Identificamos las posiciones de los datos
+                String marcaCSV = residenteData[1].trim();
+
+                // Verificar si la fila coincide con los valores ingresados
+                if (!placaCSV.equals(placa) || !marcaCSV.equals(marca)) { //Si encuentra ambos datos en sus posiciones delivaredas, se remplazan con una linea vacia
+                    // Si no coinciden, escribir la línea en el archivo temporal
+                    bwResidentes.write(line);
+                    bwResidentes.newLine();
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Renombrar el archivo temporal al nombre original
+        File tempFile = new File("temp.csv");
+        File originalFile = new File(nombreDocumento);
+        if (tempFile.renameTo(originalFile)) {
+            System.out.println("Registro eliminado exitosamente.");
+        } else {
+            // Si el reemplazo directo no funciona, intenta copiar el contenido del temporal al original
+            try {
+                Files.copy(tempFile.toPath(), originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("Registro eliminado exitosamente.");
+            } catch (IOException e) {
+                System.out.println("Error al eliminar el registro.");
+                e.printStackTrace();
             }
         }
-        System.out.println("No se encontro al residente buscado");
+        
+        // Actualizar la lista original con la copia modificada
+        residenteList.clear();
+        residenteList.addAll(copiaResidentes);
     }
     
     private static void imprimirInformeMovimiento() {// inicio del metodo para imprimir el informe de movimientos
