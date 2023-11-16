@@ -9,24 +9,14 @@ import java.time.LocalDateTime;
 //importar la libreria de time.LocalDateTime
 
 public class Movimiento {
-    protected String tipoCliente;
     protected String placa;
     protected LocalDateTime horaEntrada;
     protected LocalDateTime horaSalida;
-    protected double redondear;
-    protected double total;
 
-    public Movimiento(String tipoCliente, String placa, LocalDateTime horaEntrada, LocalDateTime horaSalida, double redonder, double total) {//constructor de Movimiento
-        this.tipoCliente = tipoCliente;
+    public Movimiento(String placa, LocalDateTime horaEntrada, LocalDateTime horaSalida) {//constructor de Movimiento
         this.placa = placa;
         this.horaEntrada = horaEntrada;
         this.horaSalida = horaSalida;
-        this.redondear = redonder;
-        this.total = total;
-    }
-
-    public String getTipoCliente() {
-        return this.tipoCliente;
     }
 
     public String getPlaca() {
@@ -41,32 +31,8 @@ public class Movimiento {
         return this.horaSalida;
     }
 
-    public double getRedondear() {
-        return this.redondear;
-    }
-
-    public double getTotal() {
-        return this.total;
-    }
-
-    public void setTipoCliente(String tipoCliente) {
-        this.tipoCliente = tipoCliente;
-    }
-
     public void setHoraSalida(LocalDateTime horaSalida) {
         this.horaSalida = horaSalida;
-    }
-
-    public void setHoraEntrada(LocalDateTime horaEntrada) {
-        this.horaEntrada = horaEntrada;
-    }
-
-    public void setRedondear(double redondear) {
-        this.redondear = redondear;
-    }
-
-    public void setTotal(double total) {
-        this.total = total;
     }
     //Stters y getters de la clase Movimientos
 }

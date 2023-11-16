@@ -10,21 +10,15 @@ import java.time.LocalDateTime;
 //importar la libreria de time.LocalDateTime
 public class MovimientoResidente extends Movimiento {
 
-    private String tipoCliente;
     private String placa;
     private LocalDateTime horaEntrada;
     private LocalDateTime horaSalida;
-    private double redondear;
-    private double total;
 
-    public MovimientoResidente(String tipoCliente, String placa, LocalDateTime horaEntrada, LocalDateTime horaSalida, double redondear, double total){//constructor de MovimientoRegular
-        super(tipoCliente, placa, horaEntrada, horaSalida, redondear, total);//super de la clase padre Movimiento
-        this.tipoCliente = tipoCliente;
+    public MovimientoResidente(String placa, LocalDateTime horaEntrada, LocalDateTime horaSalida){//constructor de MovimientoResidente
+        super(placa, horaEntrada, horaSalida);//super de la clase padre Movimiento
         this.placa = placa;
         this.horaEntrada = horaEntrada;
         this.horaSalida = horaSalida;
-        this.redondear = redondear;
-        this.total = total;
     }
 
     public String getplaca(){
