@@ -110,7 +110,7 @@ public class ParqueoMain {
                         System.out.println("Pago registrado! Ingresando al residente..."); //el residente decide pagar su deuda
                    
                         LocalDateTime horaEntrada = LocalDateTime.now();
-                    
+                        
                         // Crea un objeto MovimientoResidente con la hora de entrada y agrega a la lista de movimientos.
                         MovimientoResidente movimiento = new MovimientoResidente(placa, horaEntrada, null);
                         movimientos.add(movimiento);
@@ -159,7 +159,6 @@ public class ParqueoMain {
         }
     }//fin del método de guardar movimientos de clientes regulares/residentes
     
-
     private static void guardarResidentes(String placa, String marca, String color, String modelo, Boolean pagoSolvente, int mesesPagados) {
         try (PrintWriter writer = new PrintWriter(new FileWriter("Residentes.csv", true))) {
             writer.println(placa + "," + marca + "," + color + "," + modelo + "," + (pagoSolvente != null ? pagoSolvente : false) + "," + mesesPagados);
@@ -168,9 +167,7 @@ public class ParqueoMain {
             System.out.println("Error al guardar el Residente en el archivo CSV.");
         }
     }
-    
-    
-    
+ 
     private static void salidaVehiculo() {//inicio del metodo para salida de los vehiculos
         System.out.println("----------------------------------------------------------------------------------------------------");
     
@@ -229,7 +226,7 @@ public class ParqueoMain {
         System.out.println("----------------------------------------------------------------------------------------------------");
     }
     
-    private static void registrarResidente() {
+    private static void registrarResidente() {//inicio del registro de residente
         System.out.println("----------------------------------------------------------------------------------------------------");
         Scanner scanner = new Scanner(System.in);
     
@@ -245,7 +242,7 @@ public class ParqueoMain {
             System.out.println("¿El residente desea pagar la mensualidad del parqueo del mes actual? Si/No");
             String pagoSolvente = scanner.nextLine();
     
-            // Corrección: Agregar la cantidad de meses adicionales a pagar
+            //  Agregar la cantidad de meses adicionales a pagar
             int mesesPagados = 0;
             if (pagoSolvente.equalsIgnoreCase("si")) {
                 System.out.println("¿Cuántos meses desea pagar por adelantado?");
@@ -266,12 +263,8 @@ public class ParqueoMain {
             e.printStackTrace();
             System.out.println("Error al registrar al Residente. Verifique los datos e inténtelo de nuevo.");
         }
-    }
+    }// fin del registro de nuevo residente
     
-    
-    
-    
-
     public static void eliminarPorID(List<Residente> residenteList, String nombreDocumento) {
         Scanner scanner = new Scanner(System.in);
 
@@ -282,7 +275,6 @@ public class ParqueoMain {
         System.out.println("Ingrese la marca del vehículo del residente que desea borrar: ");
         String marca = scanner.nextLine().trim();
         
-
         // Copiar la lista para evitar ConcurrentModificationException
         List<Residente> copiaResidentes = new ArrayList<>(residenteList); //Se hace una copia de la lista actual de residentes
 
@@ -369,7 +361,6 @@ public class ParqueoMain {
         }
     }
     
-    
     public static void informeResidentes() {// inicio del metodo para el informe de residentes
         String archivoCSV = "Residentes.csv"; // Reemplaza con el nombre de tu archivo CSV
         int contador = 0;
@@ -425,7 +416,6 @@ public class ParqueoMain {
         cargarResidentesDesdeCSV();
     }// fin del metodo para cargar movimientos del csv
 
-
     private static void cargarResidentesDesdeCSV() {
         try (BufferedReader brResidentes = new BufferedReader(new FileReader("Residentes.csv"))) {
             String lineaResidentes;
@@ -458,7 +448,4 @@ public class ParqueoMain {
             e.printStackTrace();
         }
     }
-    }
-    
-
-    // fin del Main
+    }  // fin del Main
