@@ -12,15 +12,14 @@ public class Residente {
     private String marca;
     private String color;
     private String modelo;
-    private int mesesPagados; 
 
-    public Residente(String placa, String marca, String color, String modelo, boolean pagoSolvente, int mesesPagados) {
-        this.placa = placa;
-        this.marca = marca;
-        this.color = color;
-        this.modelo = modelo;
-        this.pagoSolvente = pagoSolvente;
-        this.mesesPagados = mesesPagados;
+
+    public Residente(String placa, String marca, String color, String modelo, boolean pagoSolvente) {//constructor de Residentes
+        this.placa=placa;
+        this.marca=marca;
+        this.color=color;
+        this.modelo=modelo;
+        this.pagoSolvente=pagoSolvente;
     }
 
     public String getPlaca(){
@@ -44,15 +43,6 @@ public class Residente {
     public boolean tienePagoSolvente(){
         return pagoSolvente;
     }
-
-    public int getMesesPagados() {
-        return mesesPagados;
-    }
-
-    public void setMesesPagados(int mesesPagados) {
-        this.mesesPagados = mesesPagados;
-    }
-
     //getters y setters de Residente
 
 }
