@@ -450,8 +450,8 @@ public class ParqueoMain {
                 if (datos.length >= 6) { 
                     String tipoCliente = datos[0];
                     String placa = datos[1].toLowerCase().trim().replace(" ", ""); // Normaliza la placa
-                    LocalDateTime horaEntrada = LocalDateTime.parse(datos[2], DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.S"));
-                    LocalDateTime horaSalida = datos[3].isEmpty() ? null : LocalDateTime.parse(datos[3], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+                    LocalDateTime horaEntrada = LocalDateTime.parse(datos[2], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+LocalDateTime horaSalida = datos[3].isEmpty() ? null : LocalDateTime.parse(datos[3], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
                     double horasEstacionado = Double.parseDouble(datos[4]);
                     double total = Double.parseDouble(datos[5]);
     
@@ -505,5 +505,5 @@ public class ParqueoMain {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+         }
     }  // fin del Main
