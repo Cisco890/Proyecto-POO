@@ -14,11 +14,14 @@ public class MovimientoResidente extends Movimiento {
     private LocalDateTime horaEntrada;
     private LocalDateTime horaSalida;
 
-    public MovimientoResidente(String placa, LocalDateTime horaEntrada, LocalDateTime horaSalida){//constructor de MovimientoResidente
-        super(placa, horaEntrada, horaSalida);//super de la clase padre Movimiento
+    public MovimientoResidente(String tipoCliente, String placa, LocalDateTime horaEntrada, LocalDateTime horaSalida, double horasEstacionado, double total){//constructor de MovimientoRegular
+        super(tipoCliente, placa, horaEntrada, horaSalida, horasEstacionado, total);//super de la clase padre Movimiento
+        this.tipoCliente = tipoCliente;
         this.placa = placa;
         this.horaEntrada = horaEntrada;
         this.horaSalida = horaSalida;
+        this.horasEstacionado = horasEstacionado;
+        this.total = total;
     }
 
     public String getplaca(){

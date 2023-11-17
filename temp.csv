@@ -1,1 +1,7 @@
-placa,marca,color,modelo,pagoSolvente
+placa,marca,color,modelo,pagoSolvente,mesesPagados
+457,k,k,k,false,0
+1,1,1,1,true,1
+d,d,d,d,false,0
+e6998j,ferrari,rojo,spider,true,0
+452,a,a,a,true,0
+7,7,7,7,true,0
