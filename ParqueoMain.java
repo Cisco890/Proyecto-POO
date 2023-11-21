@@ -44,6 +44,7 @@ public class ParqueoMain {
             switch (opcion) {
                 case 1:
                     ingresoVehiculo();//opcion para ingresar vehículos al parqueo
+
                     break;
                 case 2:
                     salidaVehiculo();//opción para sacar vehículos del parqueo
@@ -160,14 +161,7 @@ public class ParqueoMain {
             if (movimientoOpt.isPresent()) {
                 Movimiento movimiento = movimientoOpt.get();
 
-                // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // formato de la hora
-                // String horaEntradaString = horaEntrada.format(formatter);
-                // String horaSalidaString = horaSalida != null ? horaSalida.format(formatter) : ""; // Si la hora de
-                //                                                                                   // salida es nula,
-                //                                                                                   // deja el string
-                //                                                                                   // vacio
 
-                 // Verifica si la placa está en la lista de residentes
             
                 movimiento.setTipoCliente(tipoCliente);
                 movimiento.setHoraEntrada(horaEntrada);
@@ -348,9 +342,11 @@ public class ParqueoMain {
                     // Si no coinciden, escribir la línea en el archivo temporal
                     bwResidentes.write(line);
                     bwResidentes.newLine();
+      
                 }
             }
-    
+
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -378,9 +374,20 @@ public class ParqueoMain {
         residenteList.addAll(copiaResidentes);
     
         // Eliminar el residente de la lista
-        Residente residenteAEliminar = new Residente(placa, marca, "", "", false, 0);
-        residenteList.remove(residenteAEliminar);
+        Iterator<Residente> iterator = residenteList.iterator();
+                while (iterator.hasNext()) {
+                    Residente residente = iterator.next();
+                    if(residente.getPlaca().equals(placa)&& residente.getMarca().equals(marca)){
+                        iterator.remove();
+                        break; // terminar el bucle
+                    }
+                    
+                }
+
+
+
     }
+    
 
     private static void imprimirInformeMovimiento() {
         //Creamos un scanner 
@@ -451,7 +458,7 @@ public class ParqueoMain {
                     String tipoCliente = datos[0];
                     String placa = datos[1].toLowerCase().trim().replace(" ", ""); // Normaliza la placa
                     LocalDateTime horaEntrada = LocalDateTime.parse(datos[2], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
-LocalDateTime horaSalida = datos[3].isEmpty() ? null : LocalDateTime.parse(datos[3], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
+                    LocalDateTime horaSalida = datos[3].isEmpty() ? null : LocalDateTime.parse(datos[3], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S"));
                     double horasEstacionado = Double.parseDouble(datos[4]);
                     double total = Double.parseDouble(datos[5]);
     
