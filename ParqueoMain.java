@@ -8,10 +8,12 @@
   */
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,7 +26,7 @@ import java.util.Optional;
 //se importan todas las librerías necesarias
 
 public class ParqueoMain {
-    private static List<Movimiento> movimientos = new ArrayList<>();//array del csv de movimientos
+    public static List<Movimiento> movimientos = new ArrayList<>();//array del csv de movimientos
     private static List<Residente> residentes = new ArrayList<>();//array del csv de residentes
     
 
@@ -44,7 +46,6 @@ public class ParqueoMain {
             switch (opcion) {
                 case 1:
                     ingresoVehiculo();//opcion para ingresar vehículos al parqueo
-
                     break;
                 case 2:
                     salidaVehiculo();//opción para sacar vehículos del parqueo
@@ -74,138 +75,86 @@ public class ParqueoMain {
         }
     }
 
-    private static void ingresoVehiculo() {//inicio del método para poder ingresar vehículos
+    private static void ingresoVehiculo() {
         System.out.println("----------------------------------------------------------------------------------------------------");
         Scanner scanner = new Scanner(System.in);
         System.out.println("Ingrese la placa del vehículo: ");
-         String placa = scanner.nextLine().trim().toLowerCase();// Normaliza la placa, es decir vuelve todo lowercase y quita espacios
-        
-        String tipoCliente = "Cliente Regular"; // Por defecto, asumimos que es un cliente regular
-        
+        String placa = scanner.nextLine().trim().toLowerCase();
+    
+        String tipoCliente = "Regular"; // Assume regular customer by default
+    
         for (Residente residente : residentes) {
-            if (residente.getPlaca().equals(placa)) {//comparación de placas del csv de residentes con la placa que se está ingresando
-                System.out.println("Se identificó al usuario como residente!"); 
+            if (residente.getPlaca().equals(placa)) {
+                System.out.println("Se identificó al usuario como residente!");
                 System.out.println("Verificando si ha pagado...");
-                if (residente.tienePagoSolvente()) {//verificación si el residente va al día con sus pagos
+                if (residente.tienePagoSolvente()) {
                     System.out.println("El usuario está al día en sus pagos, registrando información de movimiento...");
-                    
+    
                     // Registra la hora de entrada actual.
                     LocalDateTime horaEntrada = LocalDateTime.now();
-                
-                    // Crea un objeto MovimientoResidente con la hora de entrada y agrega a la lista de movimientos.
-                    MovimientoResidente movimiento = new MovimientoResidente(tipoCliente, placa, horaEntrada, null, 0, 0);
-                    movimientos.add(movimiento);
-                    
-                    tipoCliente = "Residente"; // Cambiamos el tipo de cliente a Residente
-                    
+                    tipoCliente = "Residente"; // Change the client type to Residente
+    
                     // Llama a la función para guardar el movimiento en el archivo CSV.
-                    guardarMovimientosGenerales(placa, horaEntrada, null, 0.0, 0.0, tipoCliente);
+                    reescribirCSV(tipoCliente, placa, horaEntrada, null, 0.0, 0.0);
+    
                 } else {
-                    System.out.println("El usuario no está al día en sus pagos, ¿quiere realizarlo ahora?");//si el residente no está en su
+                    System.out.println("El usuario no está al día en sus pagos, ¿quiere realizarlo ahora?");
                     System.out.println("1. Sí, realizará el pago en este instante");
                     System.out.println("2. No, no realizará el pago en este instante");
                     int ans1 = scanner.nextInt();
-                    
-                    
-                    if(ans1 == 1) {
-                        // Aun está pendiente ver cuánto tendrá que pagar al mes.
-                        // Este valor es inventado solo por conveniencia actual.
-                        System.out.println("Su total son 100 Quetzales"); 
-                        System.out.println("Pago registrado! Ingresando al residente..."); //el residente decide pagar su deuda
-                   
+    
+                    if (ans1 == 1) {
+                        System.out.println("Su total son 100 Quetzales");
+                        System.out.println("Pago registrado! Ingresando al residente...");
+                        modificarSolvencia(true, placa);
                         LocalDateTime horaEntrada = LocalDateTime.now();
-                        
-                        // Crea un objeto MovimientoResidente con la hora de entrada y agrega a la lista de movimientos.
-                        MovimientoResidente movimiento = new MovimientoResidente(tipoCliente, placa, horaEntrada, null, 0, 0);
-                        movimientos.add(movimiento);
-                    
-                        tipoCliente = "Residente"; // Cambiamos el tipo de cliente a Residente
-                    
-                        // Llama a la función para guardar el movimiento en el archivo CSV.
-                        guardarMovimientosGenerales(placa, horaEntrada, null, 0.0, 0.0, tipoCliente);
+    
+                        // Crea un objeto MovimientoResidente con la hora de entrada y agrega a la lista de movimientos
+                        tipoCliente = "Residente"; // Change the client type to Residente
+                        // Llama a la función para guardar el movimiento en el archivo CSV
+                        reescribirCSV(tipoCliente, placa, horaEntrada, null, 0.0, 0.0);
+    
                     } else if (ans1 == 2) {
-                        System.out.println("Que tenga un buen día, ¡de media vuelta! (Desgraciado)");
-                        return; // línea para salir de la función si no se realiza el pago
+                        System.out.println("Que tenga un buen día, ¡de media vuelta!");
+                        return; // Exit the function if no payment is made
                     } else {
                         System.out.println("Opción no válida. Intente de nuevo.");
-                        return; // programación defensiva
+                        return; // Defensive programming
                     }
                 }
+    
+                // If a matching resident is found, exit the loop to prevent duplicate entries.
+                return;
             }
         }
-        
-        // Si llegamos a este punto, significa que el cliente no es un residente.
-        // Registra la hora de entrada actual.
+    
+        // If the loop did not find a matching resident, create a default Movimiento entry.
         LocalDateTime horaEntrada = LocalDateTime.now();
-    
-        // Crea un objeto Movimiento con la hora de entrada y agrega a la lista de movimientos.
-        Movimiento movimiento = new Movimiento(tipoCliente, placa, horaEntrada, null, 0, 0);
-        movimientos.add(movimiento);
-    
-        tipoCliente = "Regular"; // Cambia el tipo de cliente a Cliente Regular
         
         // Llama a la función para guardar el movimiento en el archivo CSV.
-        guardarMovimientosGenerales(placa, horaEntrada, null, 0.0, 0.0, tipoCliente);
-        
-        System.out.println("Movimiento registrado para el cliente con placa " + placa);//es lo que muestra el panel
+        reescribirCSV(tipoCliente, placa, horaEntrada, null, 0.0, 0.0);
+        System.out.println("Movimiento registrado para el cliente con placa " + placa);
         System.out.println("----------------------------------------------------------------------------------------------------");
-    }//fin del método para ingresar vehículos 
+    }
     
-    private static void guardarMovimientosGenerales(String placa, LocalDateTime horaEntrada, LocalDateTime horaSalida,
-            double horasEstacionado, double total, String tipoCliente) { // inicio del metodo para guardar el movimiento de
-                                                                  // clientes regulares/residentes
-        try (PrintWriter writer = new PrintWriter(new FileWriter("Movimientos.csv", true))) { // escribir en el csv
-                                                                                              // correcto
-            Optional<Movimiento> movimientoOpt = obtenerMovimientoPorPlaca(placa);
-
-            if (movimientoOpt.isPresent()) {
-                Movimiento movimiento = movimientoOpt.get();
-
-
-            
-                movimiento.setTipoCliente(tipoCliente);
-                movimiento.setHoraEntrada(horaEntrada);
-                movimiento.setHoraSalida(horaSalida);
-                movimiento.setHorasEstacionado(horasEstacionado);
-                movimiento.setTotal(total);
-
-                // writer.print(tipoCliente + "," + placa.toLowerCase() + "," + horaEntradaString + ","
-                //         + horaSalidaString + "," + horasEstacionado + "," + total);
-                // writer.println();
-                reescribirCSV();
-            } else {
-                Movimiento movimiento = new Movimiento(tipoCliente, placa, horaEntrada, horaSalida, horasEstacionado, total);
-                movimientos.add(movimiento);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    } // fin del método de guardar movimientos de clientes regulares/residentes
-
-    private static void reescribirCSV() {
-        try (PrintWriter writer = new PrintWriter(new FileWriter("Movimientos.csv"))) {
+    private static void reescribirCSV(String tipoCliente, String placa, LocalDateTime horaEntrada, LocalDateTime horaSalida, double horasEstacionado, double total) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("Movimientos.csv", true))) {
             // Escribir el encabezado
-            writer.println("Tipo de Cliente,Placa,Hora de Entrada,Hora de Salida,Horas Estacionado,Total");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+            String horaEntradaFormateada = (horaEntrada != null) ? horaEntrada.format(formatter) : "";
+            String horaSalidaFormateada = (horaSalida != null) ? horaSalida.format(formatter) : "";
+            if(tipoCliente == "Residente"){
+                movimientos.add(new MovimientoResidente(tipoCliente, placa, horaEntrada, horaSalida, horasEstacionado, total));
+            } else if (tipoCliente == "Regular"){
+                movimientos.add(new MovimientoRegular(tipoCliente, placa, horaEntrada, horaSalida, horasEstacionado, total));
+            }
             
             // Escribir cada movimiento
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-            for (Movimiento movimiento : movimientos) {
-                writer.print(movimiento.getTipoCliente() + ",");
-                writer.print(movimiento.getPlaca() + ",");
-                writer.print(movimiento.getHoraEntrada().format(formatter) + ",");
-                writer.print((movimiento.getHoraSalida() != null) ? movimiento.getHoraSalida().format(formatter) : "" + ",");
-                writer.print(movimiento.getHorasEstacionado() + ",");
-                writer.println(movimiento.getTotal());
-            }
+            writer.write(tipoCliente + "," + placa + "," + horaEntradaFormateada + "," + horaSalidaFormateada + "," + horasEstacionado + "," + total + "\n");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private static Optional<Movimiento> obtenerMovimientoPorPlaca(String placa) {
-        return movimientos.stream()
-                .filter(movimiento -> movimiento.getPlaca().equalsIgnoreCase(placa))
-                .findFirst();
     }
     
     private static void guardarResidentes(String placa, String marca, String color, String modelo,
@@ -217,6 +166,22 @@ public class ParqueoMain {
         e.printStackTrace();
     }
     }// fin del metodo para guardar residentes
+
+    private static void modificarSolvencia(boolean ValorBool, String placa){
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter("Residentes.csv"))) {
+            for(Residente res : residentes){
+                if(res.getPlaca().equals(placa)){
+                    res.setPagoSolvente(ValorBool);
+                }
+            }
+            writer.write("Placa"+","+"Marca"+","+"Color"+","+"Modelo"+","+"Pago Solvente"+","+"Meses pagados"+ "\n");
+            for(Residente res: residentes){
+                writer.write(res.getPlaca() + "," + res.getMarca() + "," + res.getColor() + "," + res.getModelo() + "," + res.tienePagoSolvente() + "," + res.getMesesPagados() + "\n");
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
  
     private static void salidaVehiculo() {//inicio del metodo para salida de los vehiculos
         System.out.println("----------------------------------------------------------------------------------------------------");
@@ -229,22 +194,23 @@ public class ParqueoMain {
     
         for (Movimiento movimiento : movimientos) {
             if (movimiento.getPlaca().toLowerCase().equals(placa)) {
+                LocalDateTime horaEntrada = movimiento.getHoraEntrada();//obtener la hora de entrada del csv
+                LocalDateTime horaSalida = LocalDateTime.now();//hora de salida de la compu
+
                 if (movimiento instanceof MovimientoResidente) {
                     // revisasr si el cliente es un residente, para registrar la hora de salida
                     System.out.println("El residente con placa " + placa + " ha salido del estacionamiento.");
                     System.out.println("Registrando la hora de salida...");
-                    LocalDateTime horaSalida = LocalDateTime.now();// hora de la compu
                     movimiento.setHoraSalida(horaSalida);
     
                     // Actualiza el movimiento en el archivo CSV.
-                    guardarMovimientosGenerales(movimiento.getPlaca(), movimiento.getHoraEntrada(), horaSalida, 0.0, 0.0, "Residente");
+                    eliminarPorMovimiento(movimientos, placa, "Movimientos.csv", horaEntrada, horaSalida, 0.0, 0.0);
     
                     System.out.println("----------------------------------------------------------------------------------------------------");
                     return;
                 }
     
-                LocalDateTime horaEntrada = movimiento.getHoraEntrada();//obtener la hora de entrada del csv
-                LocalDateTime horaSalida = LocalDateTime.now();//hora de salida de la compu
+                
     
                 if (movimiento.getHoraSalida() == null) {
                     // El vehículo está actualmente estacionado, esto se hace para los regulares
@@ -256,12 +222,9 @@ public class ParqueoMain {
                     System.out.println("Registrando la hora de salida...");
                     System.out.println("Saliendo del estacionamiento...");
                     System.out.println("----------------------------------------------------------------------------------------------------");
-    
-                    // Actualiza la hora de salida en el objeto de movimiento.
-                    movimiento.setHoraSalida(horaSalida);
-    
+        
                     // Actualiza el movimiento en el archivo CSV.
-                    guardarMovimientosGenerales(movimiento.getPlaca(), horaEntrada, horaSalida, horasEstacionado, total, "Regular");
+                    eliminarPorMovimiento(movimientos, placa, "Movimientos.csv", horaEntrada, horaSalida, horasEstacionado, total);
                 } else {
                     // El vehículo ya ha salido si hay una placa que ya salio y no ha vuelto a ingresar
                     System.out.println("El vehículo con placa " + placa + " ya ha salido del estacionamiento.");
@@ -298,7 +261,7 @@ public class ParqueoMain {
                 System.out.println("¿Cuántos meses desea pagar por adelantado?");
                 mesesPagados = scanner.nextInt();
                 residentes.add(new Residente(placa, marca, color, modelo, true, mesesPagados));
-            guardarResidentes(placa, marca, color, modelo, true, mesesPagados); // Guardar residente en el CSV
+                guardarResidentes(placa, marca, color, modelo, true, mesesPagados); // Guardar residente en el CSV
             }
             else if (pagoSolvente.equalsIgnoreCase("no")) {
                 residentes.add(new Residente(placa, marca, color, modelo, false, mesesPagados));
@@ -315,6 +278,72 @@ public class ParqueoMain {
         }
     }// fin del registro de nuevo residente
     
+    public static void eliminarPorMovimiento(List<Movimiento> movimientos, String placa,String nombreDocumento, LocalDateTime Entrada, LocalDateTime Salida, double horasEstacionado, double total) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+        Entrada.format(formatter);
+        Salida.format(formatter);
+
+        // Copiar la lista para evitar ConcurrentModificationException
+        List<Movimiento> copiaMovimientos = new ArrayList<>(movimientos);
+    
+        try (BufferedReader brMovimientos = new BufferedReader(new FileReader(nombreDocumento));
+            BufferedWriter bwMovimientos = new BufferedWriter(new FileWriter("temp2.csv"))) {
+
+            String line;
+            while ((line = brMovimientos.readLine()) != null) {
+                String[] movimientoData = line.split(",");
+                String claseCSV = movimientoData[0].trim();
+                String placaCSV = movimientoData[1].trim();
+                String horaimporante = movimientoData[3].trim();
+                // Verificar si la fila coincide con los valores ingresados
+                if (placaCSV.equals(placa) && claseCSV.equals("Regular") && horaimporante == "") {
+                    // Si no coinciden, escribir la línea en el archivo temporal
+                    bwMovimientos.write("Regular" + "," + placa + "," + Entrada.format(formatter) + "," + Salida.format(formatter) + "," + horasEstacionado + "," + total);
+                } else if (placaCSV.equals(placa) && claseCSV.equals("Residente") && horaimporante == "") {
+                    bwMovimientos.write("Residente" + "," + placa + "," + Entrada.format(formatter) + "," + Salida.format(formatter) + "," + 0.0 + "," + 0.0);
+                } else {
+                    bwMovimientos.write(line);
+                }
+                // Agregar una nueva línea después de cada línea escrita
+                bwMovimientos.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    
+        // Renombrar el archivo temporal al nombre original
+        File tempFile = new File("temp2.csv");
+        File originalFile = new File(nombreDocumento);
+        if (tempFile.renameTo(originalFile)) {
+            System.out.println("Movimiento eliminado exitosamente.");
+            System.out.println("----------------------------------------------------------------------------------------------------");
+    
+        } else {
+            // Si el reemplazo directo no funciona, intenta copiar el contenido del temporal al original
+            try {
+                Files.copy(tempFile.toPath(), originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("Registro eliminado exitosamente.");
+            } catch (IOException e) {
+                System.out.println("Error al eliminar el registro.");
+                e.printStackTrace();
+            }
+        }
+    
+        // Actualizar la lista original con la copia modificada
+        movimientos.clear();
+        movimientos.addAll(copiaMovimientos);
+        // Eliminar el residente de la lista
+        Iterator<Movimiento> iterator = movimientos.iterator();
+        while (iterator.hasNext()) {
+            Movimiento movi = iterator.next();
+            if (movi.getPlaca().equals(placa) && movi.getHoraSalida() == null) {
+                // Eliminar el elemento utilizando el iterador
+                iterator.remove();
+                break; // Terminar el bucle después de eliminar el elemento
+            }
+        }
+    }
+
     public static void eliminarPorID(List<Residente> residenteList, String nombreDocumento) {
         Scanner scanner = new Scanner(System.in);
     
@@ -329,7 +358,7 @@ public class ParqueoMain {
         List<Residente> copiaResidentes = new ArrayList<>(residenteList);
     
         try (BufferedReader brResidentes = new BufferedReader(new FileReader(nombreDocumento));
-             BufferedWriter bwResidentes = new BufferedWriter(new FileWriter("temp.csv"))) {
+             BufferedWriter bwResidentes = new BufferedWriter(new FileWriter("temp1.csv"))) {
     
             String line;
             while ((line = brResidentes.readLine()) != null) {
@@ -342,17 +371,15 @@ public class ParqueoMain {
                     // Si no coinciden, escribir la línea en el archivo temporal
                     bwResidentes.write(line);
                     bwResidentes.newLine();
-      
                 }
             }
-
-            
+    
         } catch (IOException e) {
             e.printStackTrace();
         }
     
         // Renombrar el archivo temporal al nombre original
-        File tempFile = new File("temp.csv");
+        File tempFile = new File("temp1.csv");
         File originalFile = new File(nombreDocumento);
         if (tempFile.renameTo(originalFile)) {
             System.out.println("Residente eliminado exitosamente.");
@@ -372,78 +399,78 @@ public class ParqueoMain {
         // Actualizar la lista original con la copia modificada
         residenteList.clear();
         residenteList.addAll(copiaResidentes);
-    
         // Eliminar el residente de la lista
         Iterator<Residente> iterator = residenteList.iterator();
-                while (iterator.hasNext()) {
-                    Residente residente = iterator.next();
-                    if(residente.getPlaca().equals(placa)&& residente.getMarca().equals(marca)){
-                        iterator.remove();
-                        break; // terminar el bucle
-                    }
-                    
-                }
-
-
-
+        while (iterator.hasNext()) {
+            Residente residente = iterator.next();
+            if (residente.getPlaca().equals(placa) && residente.getMarca().equals(marca)) {
+                // Eliminar el elemento utilizando el iterador
+                iterator.remove();
+                break; // Terminar el bucle después de eliminar el elemento
+            }
+        }
+        
+        
     }
-    
 
-    private static void imprimirInformeMovimiento() {
-        //Creamos un scanner 
+    private static void imprimirInformeMovimiento() {// inicio del metodo para imprimir el informe de movimiento de clientes regulares
         Scanner scanner = new Scanner(System.in);
-        //Pedimos al usuario un rango de fechas 
-    
-        System.out.println("Ingrese la fecha de inicio (formato: yyyy-MM-dd HH:mm:ss.S):");
-        String fechaHoraInicioString = scanner.nextLine();
-        System.out.println("Ingrese la fecha de fin (formato: yyyy-MM-dd HH:mm:ss.S):");
-        String fechaHoraFinString = scanner.nextLine();
+        System.out.println("Ingrese la fecha y hora de inicio (formato: yyyy-MM-dd HH:mm:ss.S), por ejemplo 2023-11-03 08:00:00.0 :");
+        String fechaHoraInicioString = scanner.nextLine();//ingresar hora y fecha de entrada
+        System.out.println("Ingrese la fecha y hora de fin (formato: yyyy-MM-dd HH:mm:ss.S): por ejemplo 2023-11-03 15:00:00.0 ");
+        String fechaHoraFinString = scanner.nextLine();//ingresar hora y fecha de salida
     
         try {
-            //Ponemos los limites del rango de dia y fecha 
-            DateTimeFormatter entradaFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-            DateTimeFormatter salidaFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-            //Parseamos lo que obtuvimos para ponerlo a tipo LocalDateTime
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+            LocalDateTime fechaHoraInicio = LocalDateTime.parse(fechaHoraInicioString, formatter);
+            LocalDateTime fechaHoraFin = LocalDateTime.parse(fechaHoraFinString, formatter);//creacion de las variables que utiliza el metodo
     
-            LocalDateTime fechaHoraInicio = LocalDateTime.parse(fechaHoraInicioString, entradaFormatter);
-            LocalDateTime fechaHoraFin = LocalDateTime.parse(fechaHoraFinString, entradaFormatter);
-    //Inicializamos un contador 
-            int contador = 0;
+            // Filtro para obtener los movimientos de entrada y salida de clientes regulares
+            List<Movimiento> movimientosRegulares = movimientos.stream()
+                    .filter(movimiento -> movimiento instanceof MovimientoRegular)
+                    .filter(movimiento -> (movimiento.getHoraEntrada().isAfter(fechaHoraInicio) || (movimiento.getHoraSalida() != null && movimiento.getHoraSalida().isAfter(fechaHoraInicio)))
+                            && (movimiento.getHoraEntrada().isBefore(fechaHoraFin) || (movimiento.getHoraSalida() != null && movimiento.getHoraSalida().isBefore(fechaHoraFin))))
+                    .collect(Collectors.toList());
     
-    //For para registrar cuantos ingresos hubo entre el rango que se estableció 
-            for (Movimiento movimiento : movimientos) {
-                LocalDateTime horaEntrada = movimiento.getHoraEntrada();
+            // Filtro para obtener los movimientos de entrada de clientes regulares
+            List<Movimiento> movimientosEntradaRegular = movimientosRegulares.stream()
+                    .filter(movimiento -> movimiento.getHoraEntrada().isAfter(fechaHoraInicio) && movimiento.getHoraEntrada().isBefore(fechaHoraFin))
+                    .collect(Collectors.toList());
     
-                if (horaEntrada.isAfter(fechaHoraInicio) && horaEntrada.isBefore(fechaHoraFin)) {
-                    contador++;
-                }
-            }
+            // Filtro para obtener los movimientos de salida de clientes regulares
+            List<Movimiento> movimientosSalidaRegular = movimientosRegulares.stream()
+                    .filter(movimiento -> movimiento.getHoraSalida() != null && movimiento.getHoraSalida().isAfter(fechaHoraInicio) && movimiento.getHoraSalida().isBefore(fechaHoraFin))
+                    .collect(Collectors.toList());
     
-    //Imprimimos 
-            System.out.println("Cantidad de carros que entraron entre " + fechaHoraInicioString + " y " + fechaHoraFinString + ": " + contador);
-
-    //Validacion de formato para errores amigables 
+            // Cálculos para la cantidad y el total recaudado de movimientos de entrada de clientes regulares
+            long cantidadEntradaRegular = movimientosEntradaRegular.size();
+    
+            // Cálculos para la cantidad y el total recaudado de movimientos de salida de clientes regulares
+            long cantidadSalidaRegular = movimientosSalidaRegular.size();
+            double totalRecaudadoSalidaRegular = movimientosSalidaRegular.stream().mapToDouble(Movimiento::getTotal).sum();
+    
+            System.out.println("Cantidad de clientes REGULARES que ENTRARON entre " + fechaHoraInicioString + " y " + fechaHoraFinString + ": " + cantidadEntradaRegular);
+            System.out.println("Cantidad de clientes REGULARES que SALIERON entre " + fechaHoraInicioString + " y " + fechaHoraFinString + ": " + cantidadSalidaRegular);
+            System.out.println("Total recaudado por salida de clientes regulares en ese periodo: " + totalRecaudadoSalidaRegular + " Quetzales");
+            System.out.println("NOTA: no se toma en cuenta el movimiento de los RESIDENTES" );
         } catch (Exception e) {
             System.out.println("Fecha no válida. Formato incorrecto.");
         }
-    }
+    }//fin del metodo de imprimir informe de clientes regulares
     
-    public static void informeResidentes() {// inicio del metodo para el informe de residentes
-        String archivoCSV = "Residentes.csv"; // Reemplaza con el nombre de tu archivo CSV
-        int contador = 0;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(archivoCSV))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                contador++;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Residentes ingresados: " + contador);//  residentes que han ingresado al parqueo
+    
+   public static void informeResidentes() {//informe de Residentes
+    String archivoCSV = "Residentes.csv";
+    
+    try {
+        long cantidad = Files.lines(Paths.get(archivoCSV)).count() - 1; // Restar 1 para excluir la línea de encabezado
+        System.out.println("Cantidad de residentes en el sistema: " + cantidad);
         System.out.println("----------------------------------------------------------------------------------------------------");
-    }// fin del metodo para el informe de residentes
+
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}// fin del metodo para el informe de residentes
 
     private static void cargarMovimientosDesdeCSV() {// inicio del metodo para cargar archivos del csv de movimientos, para que se pueda usar los datos que ya estaban ingresados dentro del programa si se ciera
         try (BufferedReader brMovimientos = new BufferedReader(new FileReader("Movimientos.csv"))) {

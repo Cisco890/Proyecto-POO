@@ -39,7 +39,9 @@ public class Residente {
         return this.modelo;
     }
 
-   
+    public void setPagoSolvente(boolean ValorBool){
+        this.pagoSolvente = ValorBool;
+    }
 
     public boolean tienePagoSolvente(){
         return pagoSolvente;
